@@ -1,4 +1,5 @@
 import 'package:pbl5_smarthome/core/shared/domain/entities/smart_device.dart';
+import 'package:pbl5_smarthome/globals.dart';
 
 
 import 'music_info.dart';
@@ -14,6 +15,7 @@ class SmartRoom {
     required this.airCondition,
     required this.timer,
     required this.musicInfo,
+    required this.esp32Ip, // Thêm địa chỉ IP ESP32
   });
 
   final String id;
@@ -25,6 +27,7 @@ class SmartRoom {
   final SmartDevice airCondition;
   final SmartDevice timer;
   final MusicInfo musicInfo;
+  final String esp32Ip; // Địa chỉ IP của ESP32 điều khiển phòng
 
   SmartRoom copyWith({
     String? id,
@@ -36,6 +39,7 @@ class SmartRoom {
     SmartDevice? airCondition,
     SmartDevice? timer,
     MusicInfo? musicInfo,
+    String? esp32Ip,
   }) =>
       SmartRoom(
         id: id ?? this.id,
@@ -47,14 +51,15 @@ class SmartRoom {
         airCondition: airCondition ?? this.airCondition,
         musicInfo: musicInfo ?? this.musicInfo,
         timer: timer ?? this.timer,
+        esp32Ip: esp32Ip ?? this.esp32Ip, // Cập nhật địa chỉ IP nếu có
       );
 
   static List<SmartRoom> fakeValues = [
     _room,
-    _room.copyWith(id: '2', name: 'DINING ROOM', imageUrl: _imagesUrls[2]),
-    _room.copyWith(id: '3', name: 'KITCHEN', imageUrl: _imagesUrls[3]),
-    _room.copyWith(id: '4', name: 'BEDROOM', imageUrl: _imagesUrls[4]),
-    _room.copyWith(id: '5', name: 'BATHROOM', imageUrl: _imagesUrls[1]),
+    _room.copyWith(id: '2', name: 'DINING ROOM', imageUrl: _imagesUrls[2], esp32Ip: esp32ID),
+    _room.copyWith(id: '3', name: 'KITCHEN', imageUrl: _imagesUrls[3], esp32Ip: esp32ID),
+    _room.copyWith(id: '4', name: 'BEDROOM', imageUrl: _imagesUrls[4], esp32Ip: esp32ID),
+    _room.copyWith(id: '5', name: 'BATHROOM', imageUrl: _imagesUrls[1], esp32Ip: esp32ID),
   ];
 }
 
@@ -71,6 +76,7 @@ final _room = SmartRoom(
     isOn: false,
     currentSong: Song.defaultSong,
   ),
+  esp32Ip: esp32ID, // Địa chỉ IP mặc định của ESP32
 );
 
 const _imagesUrls = [

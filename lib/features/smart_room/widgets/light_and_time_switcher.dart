@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
 
+import '../../../controllers/esp32_controllerLight.dart';
 import '../../../core/core.dart';
 
-class LightsAndTimerSwitchers extends StatelessWidget {
-  const LightsAndTimerSwitchers({
-    required this.room,
-    super.key,
-  });
+class LightsAndTimerSwitchers extends StatefulWidget {
+  const LightsAndTimerSwitchers({required this.room, super.key});
 
   final SmartRoom room;
 
   @override
+  State<LightsAndTimerSwitchers> createState() => _LightsAndTimerSwitchersState();
+}
+
+class _LightsAndTimerSwitchersState extends State<LightsAndTimerSwitchers> {
+  late bool isLightOn;
+  late bool isTimerOn;
+
+  @override
+  void initState() {
+    super.initState();
+    isLightOn = widget.room.lights.isOn;
+    isTimerOn = widget.room.timer.isOn;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final espController = ESP32ControllerLight(widget.room.esp32Ip);
+
     return SHCard(
       childrenPadding: const EdgeInsets.all(12),
       children: [
@@ -21,8 +36,14 @@ class LightsAndTimerSwitchers extends StatelessWidget {
             const Text('Lights'),
             const SizedBox(height: 8),
             SHSwitcher(
-              value: room.lights.isOn,
-              onChanged: (value) {},
+              value: isLightOn,
+              onChanged: (value) {
+                setState(() {
+                  isLightOn = value;
+                });
+                // Gửi tín hiệu đến ESP32
+                espController.toggleLight(value, int.parse(widget.room.id));
+              },
               icon: const Icon(SHIcons.lightBulbOutline),
             ),
           ],
@@ -39,11 +60,17 @@ class LightsAndTimerSwitchers extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             SHSwitcher(
-              icon: room.timer.isOn
+              icon: isTimerOn
                   ? const Icon(SHIcons.timer)
                   : const Icon(SHIcons.timerOff),
-              value: room.timer.isOn,
-              onChanged: (value) {},
+              value: isTimerOn,
+              onChanged: (value) {
+                setState(() {
+                  isTimerOn = value;
+                });
+                // Gửi tín hiệu đến ESP32
+
+              },
             ),
           ],
         ),
@@ -51,3 +78,4 @@ class LightsAndTimerSwitchers extends StatelessWidget {
     );
   }
 }
+

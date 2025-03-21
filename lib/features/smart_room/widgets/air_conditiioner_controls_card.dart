@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../controllers/esp32_controllerAir.dart';
 
 import '../../../core/core.dart';
 
@@ -96,7 +97,7 @@ class _AirIcons extends StatelessWidget {
   }
 }
 
-class _AirSwitcher extends StatelessWidget {
+class _AirSwitcher extends StatefulWidget {
   const _AirSwitcher({
     required this.room,
   });
@@ -104,7 +105,24 @@ class _AirSwitcher extends StatelessWidget {
   final SmartRoom room;
 
   @override
+  State<_AirSwitcher> createState() => _AirSwitcherState();
+}
+
+class _AirSwitcherState extends State<_AirSwitcher> {
+  late bool isAirOn;
+
+  @override
+  void initState() {
+    super.initState();
+    isAirOn = widget.room.airCondition.isOn;
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
+    final espController = ESP32ControllerAir(widget.room.esp32Ip);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -115,18 +133,25 @@ class _AirSwitcher extends StatelessWidget {
             Expanded(
               child: SHSwitcher(
                 icon: const Icon(SHIcons.fan),
-                value: room.airCondition.isOn,
-                onChanged: (value) {},
+                value: isAirOn,
+                onChanged: (value){
+                  setState(() {
+                    isAirOn = value;
+                  });
+                  // Gửi tín hiệu đến ESP32
+                  espController.toggleAirConditioner(value, int.parse(widget.room.id));
+                } ,
               ),
             ),
             const Spacer(),
             Text(
-              '${room.airCondition.value}˚',
+              '${widget.room.airCondition.value}˚',
               style: const TextStyle(fontSize: 28),
-            )
+            ),
           ],
         )
       ],
     );
   }
 }
+

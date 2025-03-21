@@ -1,6 +1,6 @@
 class SmartDevice {
   SmartDevice({required this.isOn, required this.value});
 
-  final bool isOn;
+  late bool isOn;
   final int value;
 }
