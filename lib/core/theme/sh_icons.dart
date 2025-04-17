@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 abstract class SHIcons {
   static const IconData search = CupertinoIcons.search;
@@ -11,6 +12,9 @@ abstract class SHIcons {
   static const IconData camera = CupertinoIcons.camera_fill;
   static const IconData arrowUp = Icons.keyboard_arrow_up;
   static const IconData fan = FontAwesome5.fan;
+  static final IconData fanMin = MdiIcons.fanOff; // hoặc fanLow
+  static final IconData fanMax = MdiIcons.fanSpeed3; // hoặc fanHigh
+
   static const IconData lightBulbOutline = Icons.lightbulb_outline;
   static const IconData lightBulb = Icons.lightbulb;
   static const IconData music = Icons.music_note;

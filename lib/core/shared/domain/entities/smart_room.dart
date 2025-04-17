@@ -12,7 +12,7 @@ class SmartRoom {
     required this.temperature,
     required this.airHumidity,
     required this.lights,
-    required this.airCondition,
+    required this.fanCondition,
     required this.timer,
     required this.musicInfo,
     required this.esp32Ip, // Thêm địa chỉ IP ESP32
@@ -24,7 +24,7 @@ class SmartRoom {
   final double temperature;
   final double airHumidity;
   final SmartDevice lights;
-  final SmartDevice airCondition;
+  final SmartDevice fanCondition;
   final SmartDevice timer;
   final MusicInfo musicInfo;
   final String esp32Ip; // Địa chỉ IP của ESP32 điều khiển phòng
@@ -48,7 +48,7 @@ class SmartRoom {
         temperature: temperature ?? this.temperature,
         airHumidity: airHumidity ?? this.airHumidity,
         lights: lights ?? this.lights,
-        airCondition: airCondition ?? this.airCondition,
+        fanCondition: airCondition ?? this.fanCondition,
         musicInfo: musicInfo ?? this.musicInfo,
         timer: timer ?? this.timer,
         esp32Ip: esp32Ip ?? this.esp32Ip, // Cập nhật địa chỉ IP nếu có
@@ -56,10 +56,9 @@ class SmartRoom {
 
   static List<SmartRoom> fakeValues = [
     _room,
-    _room.copyWith(id: '2', name: 'DINING ROOM', imageUrl: _imagesUrls[2], esp32Ip: esp32ID),
-    _room.copyWith(id: '3', name: 'KITCHEN', imageUrl: _imagesUrls[3], esp32Ip: esp32ID),
-    _room.copyWith(id: '4', name: 'BEDROOM', imageUrl: _imagesUrls[4], esp32Ip: esp32ID),
-    _room.copyWith(id: '5', name: 'BATHROOM', imageUrl: _imagesUrls[1], esp32Ip: esp32ID),
+    _room.copyWith(id: '2', name: 'KITCHEN', imageUrl: _imagesUrls[3], esp32Ip: esp32ID),
+    _room.copyWith(id: '3', name: 'BEDROOM', imageUrl: _imagesUrls[2], esp32Ip: esp32ID),
+    _room.copyWith(id: '4', name: 'BATHROOM', imageUrl: _imagesUrls[1], esp32Ip: esp32ID),
   ];
 }
 
@@ -69,9 +68,9 @@ final _room = SmartRoom(
   imageUrl: _imagesUrls[0],
   temperature: 12,
   airHumidity: 23,
-  lights: SmartDevice(isOn: false, value: 20),
+  lights: SmartDevice(isOn: false, value: 0),
   timer: SmartDevice(isOn: false, value: 20),
-  airCondition: SmartDevice(isOn: false, value: 10),
+  fanCondition: SmartDevice(isOn: false, value: 0),
   musicInfo: MusicInfo(
     isOn: false,
     currentSong: Song.defaultSong,
@@ -84,5 +83,4 @@ const _imagesUrls = [
   'assets/images/1.jpeg',
   'assets/images/2.jpeg',
   'assets/images/3.jpeg',
-  'assets/images/4.jpeg',
 ];

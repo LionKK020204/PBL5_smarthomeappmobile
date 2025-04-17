@@ -41,6 +41,8 @@ dependencies:
   ui_common:
     git: https://github.com/brocodev/ui_common.git
 
+  material_design_icons_flutter: ^7.0.7296
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

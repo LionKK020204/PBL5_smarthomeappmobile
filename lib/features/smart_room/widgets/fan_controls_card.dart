@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../controllers/esp32_controllerAir.dart';
+import '../../../controllers/esp32_controllerFan.dart';
 
 import '../../../core/core.dart';
 
-class AirConditionerControlsCard extends StatelessWidget {
-  const AirConditionerControlsCard({
+class FanControlsCard extends StatelessWidget {
+  const FanControlsCard({
     required this.room,
     super.key,
   });
@@ -17,24 +17,11 @@ class AirConditionerControlsCard extends StatelessWidget {
     return SHCard(
       childrenPadding: const EdgeInsets.all(12),
       children: [
-        _AirSwitcher(room: room),
-        const _AirIcons(),
+        _FanSwitcher(room: room),
         Column(
           children: [
             Row(
               children: [
-                Container(
-                  width: 120,
-                  height: 50,
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    border: Border.all(
-                      width: 10,
-                      color: Colors.white38,
-                    ),
-                  ),
-                ),
                 Expanded(
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
@@ -69,85 +56,82 @@ class AirConditionerControlsCard extends StatelessWidget {
   }
 }
 
-class _AirIcons extends StatelessWidget {
-  const _AirIcons();
 
-  @override
-  Widget build(BuildContext context) {
-    return const IconTheme(
-      data: IconThemeData(size: 30, color: Colors.white38),
-      child: Row(
-        children: [
-          Icon(SHIcons.snowFlake),
-          SizedBox(
-            width: 8,
-          ),
-          Icon(SHIcons.wind),
-          SizedBox(
-            width: 8,
-          ),
-          Icon(SHIcons.waterDrop),
-          SizedBox(
-            width: 8,
-          ),
-          Icon(SHIcons.timer, color: SHColors.selectedColor),
-        ],
-      ),
-    );
-  }
-}
-
-class _AirSwitcher extends StatefulWidget {
-  const _AirSwitcher({
+class _FanSwitcher extends StatefulWidget {
+  const _FanSwitcher({
     required this.room,
   });
 
   final SmartRoom room;
 
   @override
-  State<_AirSwitcher> createState() => _AirSwitcherState();
+  State<_FanSwitcher> createState() => _FanSwitcherState();
 }
 
-class _AirSwitcherState extends State<_AirSwitcher> {
-  late bool isAirOn;
+class _FanSwitcherState extends State<_FanSwitcher> {
+  late bool isFanOn;
+  late int FanIntensity;
 
   @override
   void initState() {
     super.initState();
-    isAirOn = widget.room.airCondition.isOn;
+    isFanOn = widget.room.fanCondition.isOn;
+    FanIntensity = widget.room.fanCondition.value;
   }
-
-
 
   @override
   Widget build(BuildContext context) {
-    final espController = ESP32ControllerAir(widget.room.esp32Ip);
+    final espController = ESP32ControllerFan(widget.room.esp32Ip);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Air conditioning'),
+        const Text('Fan'),
         const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
               child: SHSwitcher(
                 icon: const Icon(SHIcons.fan),
-                value: isAirOn,
-                onChanged: (value){
+                value: isFanOn,
+                onChanged: (value) {
                   setState(() {
-                    isAirOn = value;
+                    isFanOn = value;
+                    FanIntensity = value ? 50 : 0;
                   });
-                  // Gửi tín hiệu đến ESP32
-                  espController.toggleAirConditioner(value, int.parse(widget.room.id));
-                } ,
+                  //espController.toggleFan(value, int.parse(widget.room.id));
+                  //espController.setFanIntensity(FanIntensity, int.parse(widget.room.id));
+                },
               ),
             ),
             const Spacer(),
             Text(
-              '${widget.room.airCondition.value}˚',
+              '$FanIntensity˚',
               style: const TextStyle(fontSize: 28),
             ),
+          ],
+        ),
+        Row(
+          children: [
+            Icon(SHIcons.fanMin),
+            Expanded(
+              child: Slider(
+                value: FanIntensity.toDouble(),
+                min: 0,
+                max: 100,
+                divisions: 100,
+                label: FanIntensity.toString(),
+                onChanged: (value) {
+                  setState(() {
+                    FanIntensity = value.toInt();
+                    isFanOn = FanIntensity > 0;
+                  });
+                  //espController.toggleFan(isFanOn, int.parse(widget.room.id));
+                  //espController.setFanIntensity(FanIntensity, int.parse(widget.room.id));
+                },
+              ),
+            ),
+            Icon(SHIcons.fanMax),
           ],
         )
       ],

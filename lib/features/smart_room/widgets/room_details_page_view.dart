@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ui_common/ui_common.dart';
 
 import '../../../core/shared/domain/entities/smart_room.dart';
-import 'air_conditiioner_controls_card.dart';
+import 'fan_controls_card.dart';
 import 'light_and_time_switcher.dart';
 import 'light_intensity_slide_card.dart';
 import 'music_switchers.dart';
@@ -105,7 +105,7 @@ class RoomDetailsPageView extends StatelessWidget {
                       ).animate(_interval1),
                       child: FadeTransition(
                         opacity: _interval3,
-                        child: AirConditionerControlsCard(room: room),
+                        child: FanControlsCard(room: room),
                       ),
                     ),
                   ],

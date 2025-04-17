@@ -67,8 +67,8 @@ class BackgroundRoomCard extends StatelessWidget {
                   _DeviceIconSwitcher(
                     onTap: (value) {},
                     icon: const Icon(SHIcons.fan),
-                    label: const Text('Air-conditioning'),
-                    value: room.airCondition.isOn,
+                    label: const Text('Fan'),
+                    value: room.fanCondition.isOn,
                   ),
                   _DeviceIconSwitcher(
                     onTap: (value) {},
