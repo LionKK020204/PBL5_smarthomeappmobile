@@ -113,7 +113,7 @@ class AnimatedUpwardArrows extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          const ShimmerArrows(),
+          // const ShimmerArrows(),
           const SizedBox(height: 24),
           Container(
             margin: const EdgeInsets.only(bottom: 12),
@@ -166,17 +166,17 @@ class VerticalRoomTitle extends StatelessWidget {
     // final dx = 50 * animationValue;
     // final opacity = 1 - animationValue;
     return Align(
-      alignment: Alignment.centerLeft,
-      child: RotatedBox(
-        quarterTurns: -1,
-        child: FittedBox(
-          child: Padding(
-            padding: EdgeInsets.only(left: 40.h, right: 20.h, top: 12.w),
-            child: Text(
-              room.name.replaceAll(' ', ''),
-              maxLines: 1,
-              style: context.displayLarge.copyWith(color: SHColors.textColor),
-            ),
+      alignment: Alignment.topCenter,
+      child: Padding(
+        padding: EdgeInsets.only(left: 16.w, right: 16.h, top: 16.w),
+        child: Text(
+          room.name.replaceAll('', ''),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 24.sp,
+            fontWeight: FontWeight.bold,
+            color: SHColors.textColor,
           ),
         ),
       ),

@@ -81,12 +81,12 @@ class _BorderDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 12,
-      height: 12,
+      width: 14,
+      height: 14,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.orange, width: 2),
-          color: SHColors.backgroundColor,
+          border: Border.all(color: Colors.blueAccent, width: 3),
+          color: SHColors.textColor,
           shape: BoxShape.circle,
         ),
       ),
@@ -104,7 +104,7 @@ class _Dot extends StatelessWidget {
       height: 6,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: SHColors.hintColor,
+          color: SHColors.textColor,
           shape: BoxShape.circle,
         ),
       ),

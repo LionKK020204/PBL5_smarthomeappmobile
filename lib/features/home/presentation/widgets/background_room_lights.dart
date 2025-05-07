@@ -20,15 +20,15 @@ class BackgroundRoomCard extends StatelessWidget {
       transform: Matrix4.translationValues(0, 80 * translation, 0),
       child: DecoratedBox(
         decoration: const BoxDecoration(
-          color: SHColors.cardColor,
+          color: SHColors.trackColor,
           borderRadius: BorderRadius.all(Radius.circular(12)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 12,
-              offset: Offset(-7, 7),
-            ),
-          ],
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: Colors.black26,
+          //     blurRadius: 12,
+          //     offset: Offset(-7, 7),
+          //   ),
+          //],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,

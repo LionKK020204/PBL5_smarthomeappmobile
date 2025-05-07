@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return LightedBackgound(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.blueGrey,
         appBar: const ShAppBar(),
         body: SafeArea(
           child: Column(

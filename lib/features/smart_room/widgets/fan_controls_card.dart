@@ -29,6 +29,31 @@ class FanControlsCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         const Icon(
+                          SHIcons.thermostat,
+                          color: Colors.white38,
+                          size: 20,
+                        ),
+                        Text(
+                          'Temperature',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 10,
+                            color: Colors.white60,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text('${room.temperature.toInt()}°'),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Icon(
                           SHIcons.waterDrop,
                           color: Colors.white38,
                           size: 20,

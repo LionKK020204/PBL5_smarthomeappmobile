@@ -26,13 +26,13 @@ class SHCard extends StatelessWidget {
             end: Alignment.bottomCenter,
             colors: SHColors.cardColors,
           ),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black38,
-              blurRadius: 20,
-              offset: Offset(-10, 10),
-            ),
-          ],
+          // boxShadow: const [
+          //   BoxShadow(
+          //     color: Colors.black38,
+          //     blurRadius: 20,
+          //     offset: Offset(-10, 10),
+          //   ),
+          // ],
           borderRadius: 12.borderRadiusA,
         ),
         child: Column(
