@@ -21,7 +21,23 @@ class _LightsAndTimerSwitchersState extends State<LightsAndTimerSwitchers> {
     super.initState();
     isLightOn = widget.room.lights.isOn;
     isTimerOn = widget.room.timer.isOn;
+
+    getLightStatus();
   }
+
+  Future<void> getLightStatus() async {
+    final espController = ESP32ControllerLight(widget.room.esp32Ip);
+    final status = await espController.getLightStatus(int.parse(widget.room.id));
+
+    if (status != null && mounted) {
+      setState(() {
+        isLightOn = status.toUpperCase() == 'ON';
+      });
+      return; // ✅ Ngăn không in lỗi sau khi xử lý thành công
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {

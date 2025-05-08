@@ -32,15 +32,18 @@ class ESP32ControllerLight {
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-        return jsonResponse["state"];
+        try {
+          final jsonResponse = jsonDecode(response.body);
+          return jsonResponse["state"];
+        } catch (_) {
+          print("Không parse được JSON: ${response.body}");
+        }
       } else {
-        print("Failed to get light status for room $idRoom: ${response.statusCode} - ${response.body}");
-        return null;
+        print("Lỗi HTTP ${response.statusCode}: ${response.body}");
       }
     } catch (e) {
-      print("Error: $e");
-      return null;
+      print("Lỗi kết nối: $e");
     }
+    return null;
   }
 }
