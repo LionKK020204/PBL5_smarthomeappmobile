@@ -1,6 +1,8 @@
-class SmartDevice {
-  SmartDevice({required this.isOn, required this.value});
+enum DeviceType{ light, fan, music, timer }
 
+class SmartDevice {
+  SmartDevice({required this.type ,required this.isOn, required this.value});
+  final DeviceType type;
   late bool isOn;
   final int value;
 }

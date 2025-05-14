@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pbl5_smarthome/core/app/app.dart';
-import 'package:pbl5_smarthome/services/mqtt_service.dart';
+import 'package:pbl5_smarthome/services/mqtt_initializer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  final mqttService = MQTTService(
-    broker: '192.168.1.3',
-    username: 'admin',
-    password: '020204',
-    clientId: 'flutter_app',
+  await MQTTInitializer.initialize();
+  runApp(
+      MQTTInitializer.wrapWithProviders(
+        const SmartHomeApp(),
+      ),
   );
-  await mqttService.connect();
-  runApp(const SmartHomeApp());
 }

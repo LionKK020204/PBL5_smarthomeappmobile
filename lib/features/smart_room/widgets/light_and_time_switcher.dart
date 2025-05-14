@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-
-import '../../../controllers/esp32_controllerLight.dart';
+import 'package:provider/provider.dart';
+import '../../../controllers/controllerLight.dart';
 import '../../../core/core.dart';
+import '../../../services/mqtt_service.dart';
 
 class LightsAndTimerSwitchers extends StatefulWidget {
   const LightsAndTimerSwitchers({required this.room, super.key});
@@ -15,6 +16,7 @@ class LightsAndTimerSwitchers extends StatefulWidget {
 class _LightsAndTimerSwitchersState extends State<LightsAndTimerSwitchers> {
   late bool isLightOn;
   late bool isTimerOn;
+  late ControllerLight espController;
 
   @override
   void initState() {
@@ -22,26 +24,29 @@ class _LightsAndTimerSwitchersState extends State<LightsAndTimerSwitchers> {
     isLightOn = widget.room.lights.isOn;
     isTimerOn = widget.room.timer.isOn;
 
+    final mqttService = context.read<MQTTService>(); // 👈 lấy từ Provider
+    espController = ControllerLight(mqttService);
+
     getLightStatus();
   }
 
   Future<void> getLightStatus() async {
-    final espController = ESP32ControllerLight(widget.room.esp32Ip);
-    final status = await espController.getLightStatus(int.parse(widget.room.id));
-
-    if (status != null && mounted) {
-      setState(() {
-        isLightOn = status.toUpperCase() == 'ON';
-      });
-      return; // ✅ Ngăn không in lỗi sau khi xử lý thành công
-    }
+    espController.listenLightStatus(
+      int.parse(widget.room.id),
+          (status) {
+        if (mounted) {
+          setState(() {
+            isLightOn = status.toUpperCase() == 'ON';
+          });
+        }
+      },
+    );
   }
 
 
 
   @override
   Widget build(BuildContext context) {
-    final espController = ESP32ControllerLight(widget.room.esp32Ip);
 
     return SHCard(
       childrenPadding: const EdgeInsets.all(12),

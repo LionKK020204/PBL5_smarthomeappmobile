@@ -68,9 +68,9 @@ final _room = SmartRoom(
   imageUrl: _imagesUrls[0],
   temperature: 12,
   airHumidity: 23,
-  lights: SmartDevice(isOn: false, value: 0),
-  timer: SmartDevice(isOn: false, value: 20),
-  fanCondition: SmartDevice(isOn: false, value: 0),
+  lights: SmartDevice(type: DeviceType.light, isOn: false, value: 0),
+  timer: SmartDevice(type: DeviceType.timer, isOn: false, value: 20),
+  fanCondition: SmartDevice(type: DeviceType.fan, isOn: false, value: 0),
   musicInfo: MusicInfo(
     isOn: false,
     currentSong: Song.defaultSong,

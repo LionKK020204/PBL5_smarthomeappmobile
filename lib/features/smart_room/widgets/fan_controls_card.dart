@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../controllers/esp32_controllerFan.dart';
+import '../../../controllers/controllerFan.dart';
+import 'package:provider/provider.dart';
+import '../../../services/mqtt_service.dart';
+
 
 import '../../../core/core.dart';
 
@@ -96,17 +99,36 @@ class _FanSwitcher extends StatefulWidget {
 class _FanSwitcherState extends State<_FanSwitcher> {
   late bool isFanOn;
   late int FanIntensity;
+  late ControllerFan espController;
 
   @override
   void initState() {
     super.initState();
     isFanOn = widget.room.fanCondition.isOn;
     FanIntensity = widget.room.fanCondition.value;
+
+    final mqttService = context.read<MQTTService>(); // 👈 lấy từ Provider
+    espController = ControllerFan(mqttService);
+
+    getFanStatus();
+  }
+
+  Future<void> getFanStatus() async {
+    espController.listenFanStatus(
+      int.parse(widget.room.id),
+          (status) {
+        if (mounted) {
+          setState(() {
+            isFanOn = status.toUpperCase() == 'ON';
+          });
+          espController.setFanSpeed(int.parse(widget.room.id), FanIntensity);
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final espController = ESP32ControllerFan(widget.room.esp32Ip);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,8 +146,8 @@ class _FanSwitcherState extends State<_FanSwitcher> {
                     isFanOn = value;
                     FanIntensity = value ? 50 : 0;
                   });
-                  //espController.toggleFan(value, int.parse(widget.room.id));
-                  //espController.setFanIntensity(FanIntensity, int.parse(widget.room.id));
+                  espController.toggleFan(value, int.parse(widget.room.id));
+                  espController.setFanSpeed(FanIntensity, int.parse(widget.room.id));
                 },
               ),
             ),
@@ -151,8 +173,8 @@ class _FanSwitcherState extends State<_FanSwitcher> {
                     FanIntensity = value.toInt();
                     isFanOn = FanIntensity > 0;
                   });
-                  //espController.toggleFan(isFanOn, int.parse(widget.room.id));
-                  //espController.setFanIntensity(FanIntensity, int.parse(widget.room.id));
+                  espController.toggleFan(isFanOn, int.parse(widget.room.id));
+                  espController.setFanSpeed(FanIntensity, int.parse(widget.room.id));
                 },
               ),
             ),
