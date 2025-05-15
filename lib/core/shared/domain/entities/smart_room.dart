@@ -1,5 +1,5 @@
 import 'package:pbl5_smarthome/core/shared/domain/entities/smart_device.dart';
-import 'package:pbl5_smarthome/globals.dart';
+import 'package:pbl5_smarthome/globals/globals.dart';
 
 
 import 'music_info.dart';
@@ -15,7 +15,6 @@ class SmartRoom {
     required this.fanCondition,
     required this.timer,
     required this.musicInfo,
-    required this.esp32Ip, // Thêm địa chỉ IP ESP32
   });
 
   final String id;
@@ -27,7 +26,6 @@ class SmartRoom {
   final SmartDevice fanCondition;
   final SmartDevice timer;
   final MusicInfo musicInfo;
-  final String esp32Ip; // Địa chỉ IP của ESP32 điều khiển phòng
 
   SmartRoom copyWith({
     String? id,
@@ -39,7 +37,6 @@ class SmartRoom {
     SmartDevice? airCondition,
     SmartDevice? timer,
     MusicInfo? musicInfo,
-    String? esp32Ip,
   }) =>
       SmartRoom(
         id: id ?? this.id,
@@ -51,14 +48,13 @@ class SmartRoom {
         fanCondition: airCondition ?? this.fanCondition,
         musicInfo: musicInfo ?? this.musicInfo,
         timer: timer ?? this.timer,
-        esp32Ip: esp32Ip ?? this.esp32Ip, // Cập nhật địa chỉ IP nếu có
       );
 
   static List<SmartRoom> fakeValues = [
     _room,
-    _room.copyWith(id: '2', name: 'KITCHEN', imageUrl: _imagesUrls[3], esp32Ip: esp32ID),
-    _room.copyWith(id: '3', name: 'BEDROOM', imageUrl: _imagesUrls[2], esp32Ip: esp32ID),
-    _room.copyWith(id: '4', name: 'BATHROOM', imageUrl: _imagesUrls[1], esp32Ip: esp32ID),
+    _room.copyWith(id: '2', name: 'KITCHEN', imageUrl: _imagesUrls[3]),
+    _room.copyWith(id: '3', name: 'BEDROOM', imageUrl: _imagesUrls[2]),
+    _room.copyWith(id: '4', name: 'BATHROOM', imageUrl: _imagesUrls[1]),
   ];
 }
 
@@ -66,8 +62,8 @@ final _room = SmartRoom(
   id: '1',
   name: 'LIVING ROOM',
   imageUrl: _imagesUrls[0],
-  temperature: 12,
-  airHumidity: 23,
+  temperature: 0.0,
+  airHumidity: 0.0,
   lights: SmartDevice(type: DeviceType.light, isOn: false, value: 0),
   timer: SmartDevice(type: DeviceType.timer, isOn: false, value: 20),
   fanCondition: SmartDevice(type: DeviceType.fan, isOn: false, value: 0),
@@ -75,7 +71,6 @@ final _room = SmartRoom(
     isOn: false,
     currentSong: Song.defaultSong,
   ),
-  esp32Ip: esp32ID, // Địa chỉ IP mặc định của ESP32
 );
 
 const _imagesUrls = [

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:ui_common/ui_common.dart';
 
 import '../../../../core/core.dart';
+import '../../../../globals/globals.dart';
 
 class BackgroundRoomCard extends StatelessWidget {
   const BackgroundRoomCard({
@@ -16,6 +18,8 @@ class BackgroundRoomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final env = context.watch<GlobalEnvironmentData>();
+
     return Transform(
       transform: Matrix4.translationValues(0, 80 * translation, 0),
       child: DecoratedBox(
@@ -37,13 +41,13 @@ class BackgroundRoomCard extends StatelessWidget {
             _RoomInfoRow(
               icon: const Icon(SHIcons.thermostat),
               label: const Text('Temperature'),
-              data: '${room.temperature}°',
+              data: '${env.temperature.toInt()}°',
             ),
             height4,
             _RoomInfoRow(
               icon: const Icon(SHIcons.waterDrop),
               label: const Text('Air Humidity'),
-              data: '${room.airHumidity}%',
+              data: '${env.humidity.toInt()}%',
             ),
             height4,
             const _RoomInfoRow(

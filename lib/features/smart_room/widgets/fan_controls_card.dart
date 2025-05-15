@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../controllers/controllerFan.dart';
 import 'package:provider/provider.dart';
+import '../../../globals/globals.dart';
 import '../../../services/mqtt_service.dart';
 
 
@@ -15,8 +16,12 @@ class FanControlsCard extends StatelessWidget {
 
   final SmartRoom room;
 
+
+
   @override
   Widget build(BuildContext context) {
+    final env = context.watch<GlobalEnvironmentData>();
+
     return SHCard(
       childrenPadding: const EdgeInsets.all(12),
       children: [
@@ -45,7 +50,7 @@ class FanControlsCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text('${room.temperature.toInt()}°'),
+                        Text('${env.temperature.toInt()}°'),
                       ],
                     ),
                   ),
@@ -70,7 +75,7 @@ class FanControlsCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text('${room.airHumidity.toInt()}%'),
+                        Text('${env.humidity.toInt()}%'),
                       ],
                     ),
                   ),

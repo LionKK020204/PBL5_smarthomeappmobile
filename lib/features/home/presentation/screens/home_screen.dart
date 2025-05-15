@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pbl5_smarthome/core/core.dart';
 import 'package:ui_common/ui_common.dart';
+import 'package:pbl5_smarthome/globals/environment_initializer.dart';
+
 
 import '../widgets/lighted_background.dart';
 import '../widgets/page_indicators.dart';
@@ -23,6 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     controller.addListener(pageListener);
     super.initState();
+
+    initializeEnvironmentListeners(context);
   }
 
   @override
