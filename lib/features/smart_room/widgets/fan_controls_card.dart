@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../controllers/controllerFan.dart';
 import 'package:provider/provider.dart';
+
+import '../../../controllers/controllerFan.dart';
+import '../../../core/core.dart';
 import '../../../globals/globals.dart';
 import '../../../services/mqtt_service.dart';
 
-
-import '../../../core/core.dart';
-
-class FanControlsCard extends StatelessWidget {
+class FanControlsCard extends StatefulWidget {
   const FanControlsCard({
     required this.room,
     super.key,
@@ -16,178 +15,212 @@ class FanControlsCard extends StatelessWidget {
 
   final SmartRoom room;
 
-
-
   @override
-  Widget build(BuildContext context) {
-    final env = context.watch<GlobalEnvironmentData>();
+  State<FanControlsCard> createState() => _FanControlsCardState();
 
-    return SHCard(
-      childrenPadding: const EdgeInsets.all(12),
-      children: [
-        _FanSwitcher(room: room),
-        Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Icon(
-                          SHIcons.thermostat,
-                          color: Colors.white38,
-                          size: 20,
-                        ),
-                        Text(
-                          'Temperature',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 10,
-                            color: Colors.white60,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text('${env.temperature.toInt()}°'),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Icon(
-                          SHIcons.waterDrop,
-                          color: Colors.white38,
-                          size: 20,
-                        ),
-                        Text(
-                          'Air humidity',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 10,
-                            color: Colors.white60,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text('${env.humidity.toInt()}%'),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            )
-          ],
-        )
-      ],
-    );
-  }
 }
 
-
-class _FanSwitcher extends StatefulWidget {
-  const _FanSwitcher({
-    required this.room,
-  });
-
-  final SmartRoom room;
-
-  @override
-  State<_FanSwitcher> createState() => _FanSwitcherState();
-}
-
-class _FanSwitcherState extends State<_FanSwitcher> {
+class _FanControlsCardState extends State<FanControlsCard> {
   late bool isFanOn;
-  late int FanIntensity;
-  late ControllerFan espController;
+  late int fanIntensity;
 
   @override
   void initState() {
     super.initState();
     isFanOn = widget.room.fanCondition.isOn;
-    FanIntensity = widget.room.fanCondition.value;
+    fanIntensity = widget.room.fanCondition.value;
 
-    final mqttService = context.read<MQTTService>(); // 👈 lấy từ Provider
-    espController = ControllerFan(mqttService);
-
-    getFanStatus();
+    final controller = context.read<ControllerFan>();
+    _getFanStatus(controller);
   }
 
-  Future<void> getFanStatus() async {
-    espController.listenFanStatus(
-      int.parse(widget.room.id),
-          (status) {
-        if (mounted) {
-          setState(() {
-            isFanOn = status.toUpperCase() == 'ON';
-          });
-          espController.setFanSpeed(int.parse(widget.room.id), FanIntensity);
-        }
-      },
-    );
+  Future<void> _getFanStatus(ControllerFan controller) async {
+    controller.listenFanStatus(int.parse(widget.room.id), (status) {
+      if (mounted) {
+        setState(() {
+          isFanOn = status.toUpperCase() == 'ON';
+        });
+      }
+      controller.setFanSpeed(int.parse(widget.room.id), fanIntensity);
+    });
   }
-
   @override
   Widget build(BuildContext context) {
+    final controller = context.read<ControllerFan>();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return SHCard(
+      childrenPadding: const EdgeInsets.all(12),
       children: [
-        const Text('Fan'),
-        const SizedBox(height: 12),
+        // Row: Title - Value - Switch
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-              child: SHSwitcher(
-                icon: const Icon(SHIcons.fan),
-                value: isFanOn,
-                onChanged: (value) {
-                  setState(() {
-                    isFanOn = value;
-                    FanIntensity = value ? 50 : 0;
-                  });
-                  espController.toggleFan(value, int.parse(widget.room.id));
-                  espController.setFanSpeed(FanIntensity, int.parse(widget.room.id));
-                },
+            const Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(' Fan                 '),
               ),
             ),
-            const Spacer(),
-            Text(
-              '$FanIntensity˚',
-              style: const TextStyle(fontSize: 28),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  '$fanIntensity%',
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ),
+            ),
+            SHSwitcher(
+              icon: const Icon(SHIcons.fan),
+              value: isFanOn,
+              onChanged: (value) {
+                setState(() {
+                  isFanOn = value;
+                  fanIntensity = value ? 50 : 0;
+                });
+                controller.toggleFan(value, int.parse(widget.room.id));
+                controller.setFanSpeed(int.parse(widget.room.id), fanIntensity);
+              },
             ),
           ],
         ),
+        // Row: Slider
         Row(
           children: [
             Icon(SHIcons.fanMin),
             Expanded(
               child: Slider(
-                value: FanIntensity.toDouble(),
+                value: fanIntensity.toDouble(),
                 min: 0,
                 max: 100,
                 divisions: 100,
-                label: FanIntensity.toString(),
+                label: fanIntensity.toString(),
                 onChanged: (value) {
                   setState(() {
-                    FanIntensity = value.toInt();
-                    isFanOn = FanIntensity > 0;
+                    fanIntensity = value.toInt();
+                    isFanOn = fanIntensity > 0;
                   });
-                  espController.toggleFan(isFanOn, int.parse(widget.room.id));
-                  espController.setFanSpeed(FanIntensity, int.parse(widget.room.id));
+                  controller.toggleFan(isFanOn, int.parse(widget.room.id));
+                  controller.setFanSpeed(
+                      int.parse(widget.room.id), fanIntensity);
                 },
               ),
             ),
             Icon(SHIcons.fanMax),
           ],
-        )
+        ),
       ],
     );
+
+
   }
 }
-
+// class _FanSwitcher extends StatefulWidget {
+//   const _FanSwitcher({
+//     required this.room,
+//   });
+//
+//   final SmartRoom room;
+//
+//   @override
+//   State<_FanSwitcher> createState() => _FanSwitcherState();
+// }
+//
+// class _FanSwitcherState extends State<_FanSwitcher> {
+//   late bool isFanOn;
+//   late int fanIntensity;
+//   late ControllerFan controller;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     isFanOn = widget.room.fanCondition.isOn;
+//     fanIntensity = widget.room.fanCondition.value;
+//
+//     controller = context.read<ControllerFan>();
+//
+//     getFanStatus();
+//   }
+//
+//   Future<void> getFanStatus() async {
+//     controller.listenFanStatus(
+//       int.parse(widget.room.id),
+//           (status) {
+//         if (mounted) {
+//           setState(() {
+//             isFanOn = status.toUpperCase() == 'ON';
+//           });
+//           controller.setFanSpeed(int.parse(widget.room.id), fanIntensity);
+//         }
+//       },
+//     );
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final controller = context.read<ControllerFan>();
+//
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         // Row: Title - Value - Switch
+//         Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             const Flexible(
+//               child: FittedBox(
+//                 fit: BoxFit.scaleDown,
+//                 child: Text('Fan speed'),
+//               ),
+//             ),
+//             Flexible(
+//               child: FittedBox(
+//                 fit: BoxFit.scaleDown,
+//                 child: Text(
+//                   '$fanIntensity%',
+//                   style: const TextStyle(fontSize: 20),
+//                 ),
+//               ),
+//             ),
+//             SHSwitcher(
+//               icon: const Icon(SHIcons.fan),
+//               value: isFanOn,
+//               onChanged: (value) {
+//                 setState(() {
+//                   isFanOn = value;
+//                   fanIntensity = value ? 50 : 0;
+//                 });
+//                 controller.toggleFan(value, int.parse(widget.room.id));
+//                 controller.setFanSpeed(int.parse(widget.room.id), fanIntensity);
+//               },
+//             ),
+//           ],
+//         ),
+//         // Row: Slider
+//         Row(
+//           children: [
+//             Icon(SHIcons.fanMin),
+//             Expanded(
+//               child: Slider(
+//                 value: fanIntensity.toDouble(),
+//                 min: 0,
+//                 max: 100,
+//                 divisions: 100,
+//                 label: fanIntensity.toString(),
+//                 onChanged: (value) {
+//                   setState(() {
+//                     fanIntensity = value.toInt();
+//                     isFanOn = fanIntensity > 0;
+//                   });
+//                   controller.toggleFan(isFanOn, int.parse(widget.room.id));
+//                   controller.setFanSpeed(int.parse(widget.room.id), fanIntensity);
+//                 },
+//               ),
+//             ),
+//             Icon(SHIcons.fanMax),
+//           ],
+//         ),
+//       ],
+//     );
+//   }
+// }

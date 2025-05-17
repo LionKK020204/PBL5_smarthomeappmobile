@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pbl5_smarthome/features/smart_room/widgets/gasleak_switchers.dart';
+import 'package:pbl5_smarthome/features/smart_room/widgets/temperature_airhumidity_card.dart';
 import 'package:ui_common/ui_common.dart';
 
 import '../../../core/shared/domain/entities/smart_room.dart';
@@ -72,25 +74,6 @@ class RoomDetailsPageView extends StatelessWidget {
                       position: Tween(
                         begin: const Offset(0, 2),
                         end: Offset.zero,
-                      ).animate(_interval1),
-                      child: FadeTransition(
-                        opacity: _interval1,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: LightsAndTimerSwitchers(room: room),
-                            ),
-                            width20,
-                            Expanded(child: MusicSwitchers(room: room)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SlideTransition(
-                      position: Tween(
-                        begin: const Offset(0, 2),
-                        end: Offset.zero,
                       ).animate(_interval2),
                       child: FadeTransition(
                         opacity: _interval2,
@@ -106,6 +89,47 @@ class RoomDetailsPageView extends StatelessWidget {
                       child: FadeTransition(
                         opacity: _interval3,
                         child: FanControlsCard(room: room),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SlideTransition(
+                      position: Tween(
+                        begin: const Offset(0, 2),
+                        end: Offset.zero,
+                      ).animate(_interval1),
+                      child: FadeTransition(
+                        opacity: _interval3,
+                        child: GasLeakInfoCard(room: room),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SlideTransition(
+                      position: Tween(
+                        begin: const Offset(0, 2),
+                        end: Offset.zero,
+                      ).animate(_interval2),
+                      child: FadeTransition(
+                        opacity: _interval2,
+                        child: TemperatureAirHumidityCard(room: room),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SlideTransition(
+                      position: Tween(
+                        begin: const Offset(0, 2),
+                        end: Offset.zero,
+                      ).animate(_interval1),
+                      child: FadeTransition(
+                        opacity: _interval1,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: LightsAndTimerSwitchers(room: room),
+                            ),
+                            width20,
+                            Expanded(child: MusicSwitchers(room: room)),
+                          ],
+                        ),
                       ),
                     ),
                   ],

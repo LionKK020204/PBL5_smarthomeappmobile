@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../controllers/controllerLight.dart';
 import '../../../core/core.dart';
 
 class LightIntensitySliderCard extends StatefulWidget {
@@ -15,20 +17,34 @@ class LightIntensitySliderCard extends StatefulWidget {
 }
 
 class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
-  late SmartRoom room;
   late int lightIntensity;
   late bool isLightOn;
 
   @override
   void initState() {
     super.initState();
-    room = widget.room;
-    lightIntensity = room.lights.value;
-    isLightOn = room.lights.isOn;
+    lightIntensity =  widget.room.lights.value;
+    isLightOn = widget.room.lights.isOn;
+
+    final lightController = context.read<ControllerLight>(); // 👈 lấy từ Provider
+    _getLightStatus(lightController);
+  }
+
+  Future<void> _getLightStatus(ControllerLight controller) async {
+    controller.listenLightStatus(int.parse(widget.room.id), (status) {
+      if (mounted) {
+        setState(() {
+          isLightOn = status.toUpperCase() == 'ON';
+        });
+      }
+      controller.setLightBrightness(int.parse(widget.room.id) , lightIntensity);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.read<ControllerLight>(); // 👈 lấy từ Provider
+
     return SHCard(
       childrenPadding: const EdgeInsets.all(12),
       children: [
@@ -59,8 +75,9 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
                   lightIntensity = value ? 50 : 0;
                 });
                 // Gửi tín hiệu đến ESP32
-                // ex: espController.toggleLight(value, room.id);
-                //     espController.setLightIntensity(lightIntensity, room.id);
+                controller.toggleLight(value, int.parse(widget.room.id));
+                controller.setLightBrightness(int.parse(widget.room.id), lightIntensity);
+
               },
               icon: const Icon(SHIcons.lightBulbOutline),
             ),
@@ -84,8 +101,8 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
                     isLightOn = lightIntensity > 0;
                   });
                   // Gửi tín hiệu đến ESP32
-                  // ex: espController.toggleLight(isLightOn, room.id);
-                  //     espController.setLightIntensity(lightIntensity, room.id);
+                  controller.toggleLight(isLightOn, int.parse(widget.room.id));
+                  controller.setLightBrightness(int.parse(widget.room.id), lightIntensity);
                 },
               ),
             ),
