@@ -96,11 +96,11 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
               data: '${env.humidity.toInt()}%',
             ),
             height4,
-            const _RoomInfoRow(
-              icon: Icon(SHIcons.timer),
-              label: Text('Timer'),
-              data: null,
-            ),
+            // const _RoomInfoRow(
+            //   icon: Icon(SHIcons.timer),
+            //   label: Text('Timer'),
+            //   data: null,
+            // ),
             height12,
             const SHDivider(),
             Padding(
@@ -120,6 +120,7 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
                       lightController.setLightBrightness(int.parse(widget.room.id), value ? 50 : 0);
                     },
                   ),
+                  if (int.parse(widget.room.id) == 1 || int.parse(widget.room.id) == 3)
                   _DeviceIconSwitcher(
                     icon: const Icon(SHIcons.fan),
                     label: const Text('Fan'),
@@ -132,12 +133,12 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
                       fanController.setFanSpeed(int.parse(widget.room.id), value ? 50 : 0);
                     },
                   ),
-                  _DeviceIconSwitcher(
-                    onTap: (value) {},
-                    icon: const Icon(SHIcons.music),
-                    label: const Text('Music'),
-                    value: widget.room.musicInfo.isOn,
-                  ),
+                  // _DeviceIconSwitcher(
+                  //   onTap: (value) {},
+                  //   icon: const Icon(SHIcons.music),
+                  //   label: const Text('Music'),
+                  //   value: widget.room.musicInfo.isOn,
+                  // ),
                 ],
               ),
             ),
