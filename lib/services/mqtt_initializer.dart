@@ -35,8 +35,8 @@ class MQTTInitializer {
         ProxyProvider<MQTTService, ControllerFan>(
           update: (_, mqtt, __) => ControllerFan(mqtt),
         ),
-        ProxyProvider<MQTTService, ControllerGasLeak>(
-          update: (_, mqtt, __) => ControllerGasLeak(mqtt),
+        ChangeNotifierProvider(
+          create: (_) => ControllerGasLeak(mqttService),
         ),
       ],
       child: child,

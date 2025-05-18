@@ -1,18 +1,32 @@
 import '../services/mqtt_service.dart';
+import 'package:flutter/material.dart';
 
-class ControllerGasLeak {
+class ControllerGasLeak extends ChangeNotifier {
   final MQTTService mqttService;
 
-  ControllerGasLeak(this.mqttService);
+  ControllerGasLeak(this.mqttService) {
+    _init();
+  }
 
-  /// Lắng nghe dữ liệu rò rỉ khí gas từ cảm biến chung
-  void listenGasLeak(Function(String) onGasLeakUpdate) {
+  double _gasValue = 0;
+
+  double get gasValue => _gasValue;
+
+  void _init() {
     if (!mqttService.isConnected) {
       print('⚠️ MQTT chưa kết nối, không thể nhận dữ liệu khí gas');
       return;
     }
 
-    const topic = 'home/gas_leak'; // Đổi topic nếu hệ thống bạn sử dụng khác
-    mqttService.subscribe(topic, onGasLeakUpdate);
+    const topic = 'home/gas_leak';
+    mqttService.subscribe(topic, (message) {
+      try {
+        final value = double.parse(message);
+        _gasValue = value;
+        notifyListeners(); // Cập nhật UI
+      } catch (e) {
+        print('❌ Không thể parse dữ liệu gas: $message');
+      }
+    });
   }
 }
