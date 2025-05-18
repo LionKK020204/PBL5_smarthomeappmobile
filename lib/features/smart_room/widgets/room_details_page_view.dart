@@ -21,19 +21,160 @@ class RoomDetailsPageView extends StatelessWidget {
   final SmartRoom room;
 
   Animation<double> get _interval1 => CurvedAnimation(
-        parent: animation,
-        curve: const Interval(0.4, 1, curve: Curves.easeIn),
-      );
+    parent: animation,
+    curve: const Interval(0.4, 1, curve: Curves.easeIn),
+  );
 
   Animation<double> get _interval2 => CurvedAnimation(
-        parent: animation,
-        curve: const Interval(0.6, 1, curve: Curves.easeIn),
-      );
+    parent: animation,
+    curve: const Interval(0.6, 1, curve: Curves.easeIn),
+  );
 
   Animation<double> get _interval3 => CurvedAnimation(
-        parent: animation,
-        curve: const Interval(0.8, 1, curve: Curves.easeIn),
-      );
+    parent: animation,
+    curve: const Interval(0.8, 1, curve: Curves.easeIn),
+  );
+
+  Widget _buildLightAndMusicSwitcher() {
+    return SlideTransition(
+      position: Tween(
+        begin: const Offset(0, 2),
+        end: Offset.zero,
+      ).animate(_interval1),
+      child: FadeTransition(
+        opacity: _interval1,
+        child: Row(
+          children: [
+            Expanded(child: LightsAndTimerSwitchers(room: room)),
+            width20,
+            Expanded(child: MusicSwitchers(room: room)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildRoomWidgets() {
+    final id = int.tryParse(room.id);
+    final widgets = <Widget>[];
+
+    if (id == 1) {
+      widgets.addAll([
+        SlideTransition(
+          position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+              .animate(_interval2),
+          child: FadeTransition(
+            opacity: _interval2,
+            child: LightIntensitySliderCard(room: room),
+          ),
+        ),
+        const SizedBox(height: 20),
+        SlideTransition(
+          position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+              .animate(_interval3),
+          child: FadeTransition(
+            opacity: _interval3,
+            child: FanControlsCard(room: room),
+          ),
+        ),
+        const SizedBox(height: 20),
+        SlideTransition(
+          position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+              .animate(_interval2),
+          child: FadeTransition(
+            opacity: _interval2,
+            child: TemperatureAirHumidityCard(room: room),
+          ),
+        ),
+        const SizedBox(height: 20),
+        _buildLightAndMusicSwitcher(),
+      ]);
+    } else if (id == 2) {
+      widgets.addAll([
+        SlideTransition(
+          position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+              .animate(_interval2),
+          child: FadeTransition(
+            opacity: _interval2,
+            child: LightIntensitySliderCard(room: room),
+          ),
+        ),
+        const SizedBox(height: 20),
+        SlideTransition(
+          position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+              .animate(_interval3),
+          child: FadeTransition(
+            opacity: _interval3,
+            child: FanControlsCard(room: room),
+          ),
+        ),
+        const SizedBox(height: 20),
+        SlideTransition(
+          position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+              .animate(_interval2),
+          child: FadeTransition(
+            opacity: _interval2,
+            child: GasLeakInfoCard(room: room),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ]);
+    } else if (id == 3) {
+      widgets.addAll([
+        SlideTransition(
+          position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+              .animate(_interval2),
+          child: FadeTransition(
+            opacity: _interval2,
+            child: LightIntensitySliderCard(room: room),
+          ),
+        ),
+        const SizedBox(height: 20),
+        SlideTransition(
+          position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+              .animate(_interval3),
+          child: FadeTransition(
+            opacity: _interval3,
+            child: FanControlsCard(room: room),
+          ),
+        ),
+        const SizedBox(height: 20),
+        SlideTransition(
+          position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+              .animate(_interval2),
+          child: FadeTransition(
+            opacity: _interval2,
+            child: TemperatureAirHumidityCard(room: room),
+          ),
+        ),
+        const SizedBox(height: 20),
+        _buildLightAndMusicSwitcher(),
+      ]);
+    } else if (id == 4) {
+      widgets.addAll([
+        SlideTransition(
+          position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+              .animate(_interval2),
+          child: FadeTransition(
+            opacity: _interval2,
+            child: LightIntensitySliderCard(room: room),
+          ),
+        ),
+        const SizedBox(height: 20),
+        SlideTransition(
+          position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+              .animate(_interval2),
+          child: FadeTransition(
+            opacity: _interval2,
+            child: TemperatureAirHumidityCard(room: room),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ]);
+    }
+
+    return widgets;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,70 +210,7 @@ class RoomDetailsPageView extends StatelessWidget {
                 child: ListView(
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-                  children: [
-                    SlideTransition(
-                      position: Tween(
-                        begin: const Offset(0, 2),
-                        end: Offset.zero,
-                      ).animate(_interval2),
-                      child: FadeTransition(
-                        opacity: _interval2,
-                        child: LightIntensitySliderCard(room: room),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SlideTransition(
-                      position: Tween(
-                        begin: const Offset(0, 2),
-                        end: Offset.zero,
-                      ).animate(_interval1),
-                      child: FadeTransition(
-                        opacity: _interval3,
-                        child: FanControlsCard(room: room),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SlideTransition(
-                      position: Tween(
-                        begin: const Offset(0, 2),
-                        end: Offset.zero,
-                      ).animate(_interval1),
-                      child: FadeTransition(
-                        opacity: _interval3,
-                        child: GasLeakInfoCard(room: room),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SlideTransition(
-                      position: Tween(
-                        begin: const Offset(0, 2),
-                        end: Offset.zero,
-                      ).animate(_interval2),
-                      child: FadeTransition(
-                        opacity: _interval2,
-                        child: TemperatureAirHumidityCard(room: room),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SlideTransition(
-                      position: Tween(
-                        begin: const Offset(0, 2),
-                        end: Offset.zero,
-                      ).animate(_interval1),
-                      child: FadeTransition(
-                        opacity: _interval1,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: LightsAndTimerSwitchers(room: room),
-                            ),
-                            width20,
-                            Expanded(child: MusicSwitchers(room: room)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                  children: _buildRoomWidgets(),
                 ),
               ),
             ),
