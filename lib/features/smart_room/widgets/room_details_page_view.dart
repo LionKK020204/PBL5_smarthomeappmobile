@@ -100,12 +100,21 @@ class RoomDetailsPageView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
+        // SlideTransition(
+        //   position: Tween(begin: const Offset(0, 2), end: Offset.zero)
+        //       .animate(_interval3),
+        //   child: FadeTransition(
+        //     opacity: _interval3,
+        //     child: FanControlsCard(room: room),
+        //   ),
+        // ),
+        // const SizedBox(height: 20),
         SlideTransition(
           position: Tween(begin: const Offset(0, 2), end: Offset.zero)
-              .animate(_interval3),
+              .animate(_interval2),
           child: FadeTransition(
-            opacity: _interval3,
-            child: FanControlsCard(room: room),
+            opacity: _interval2,
+            child: TemperatureAirHumidityCard(room: room),
           ),
         ),
         const SizedBox(height: 20),
