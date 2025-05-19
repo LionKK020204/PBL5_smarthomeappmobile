@@ -3,6 +3,7 @@ import 'package:pbl5_smarthome/controllers/controllerGasleak.dart';
 import 'package:provider/provider.dart';
 import 'package:pbl5_smarthome/services/mqtt_service.dart';
 
+import '../controllers/controllerDoor.dart';
 import '../controllers/controllerFan.dart';
 import '../controllers/controllerLight.dart';
 import '../controllers/controllerTemp_Hum.dart';
@@ -10,7 +11,7 @@ import '../globals/globals.dart';
 
 class MQTTInitializer {
   static final MQTTService mqttService = MQTTService(
-    broker: '192.168.1.230',
+    broker: '192.168.1.235',
     username: 'admin',
     password: '020204',
     clientId: 'flutter_app',
@@ -37,6 +38,9 @@ class MQTTInitializer {
         ),
         ChangeNotifierProvider(
           create: (_) => ControllerGasLeak(mqttService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ControllerDoor(mqttService),
         ),
       ],
       child: child,

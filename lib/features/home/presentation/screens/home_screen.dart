@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pbl5_smarthome/core/core.dart';
+import 'package:provider/provider.dart';
 import 'package:ui_common/ui_common.dart';
 import 'package:pbl5_smarthome/globals/environment_initializer.dart';
 
 
+import '../../../../controllers/controllerDoor.dart';
 import '../widgets/lighted_background.dart';
 import '../widgets/page_indicators.dart';
 import '../widgets/sm_home_bottom_navigation.dart';
@@ -73,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           SmHomeBottomNavigationBar(
                             roomSelectorNotifier: roomSelectorNotifier,
+                            controllerDoor: context.read<ControllerDoor>(),
                           ),
                         ],
                       ),
