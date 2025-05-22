@@ -11,7 +11,7 @@ import '../globals/globals.dart';
 
 class MQTTInitializer {
   static final MQTTService mqttService = MQTTService(
-    broker: '192.168.1.235',
+    broker: '192.168.1.250',
     username: 'admin',
     password: '020204',
     clientId: 'flutter_app',
