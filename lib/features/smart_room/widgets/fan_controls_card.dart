@@ -31,7 +31,11 @@ class _FanControlsCardState extends State<FanControlsCard> {
     fanIntensity = widget.room.fanCondition.value;
 
     final controller = context.read<ControllerFan>();
-    _getFanStatus(controller);
+
+    if (int.parse(widget.room.id) == 1 || int.parse(widget.room.id) == 3){
+      _getFanStatus(controller);
+
+    }
   }
 
   Future<void> _getFanStatus(ControllerFan controller) async {

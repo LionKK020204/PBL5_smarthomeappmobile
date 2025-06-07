@@ -37,7 +37,10 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
     final fanController = context.read<ControllerFan>();
 
     _listenLightStatus(lightController);
-    _listenFanStatus(fanController);
+
+    if (int.parse(widget.room.id) == 1 || int.parse(widget.room.id) == 3){
+      _listenFanStatus(fanController);
+    }
   }
 
   void _listenLightStatus(ControllerLight controller) {
