@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../controllers/controllerLight.dart';
 import '../../../core/core.dart';
+import 'dart:async';
 
 class LightIntensitySliderCard extends StatefulWidget {
   const LightIntensitySliderCard({
@@ -19,36 +20,59 @@ class LightIntensitySliderCard extends StatefulWidget {
 class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
   late int lightIntensity;
   late bool isLightOn;
+  Timer? _debounceTimer;
+  bool? _previousLightState;
+  int? _previousBrightness;
 
   @override
   void initState() {
     super.initState();
-    lightIntensity =  widget.room.lights.value;
+    lightIntensity = widget.room.lights.value;
     isLightOn = widget.room.lights.isOn;
 
-    final lightController = context.read<ControllerLight>(); // 👈 lấy từ Provider
+    final lightController = context.read<ControllerLight>();
     _getLightStatus(lightController);
+
+    // Lưu giá trị ban đầu để kiểm tra sau này
+    _previousLightState = isLightOn;
+    _previousBrightness = lightIntensity;
   }
 
   Future<void> _getLightStatus(ControllerLight controller) async {
     controller.listenLightStatus(int.parse(widget.room.id), (status) {
       if (mounted) {
-        setState(() {
-          isLightOn = status.toUpperCase() == 'ON';
-        });
+        final newState = status.toUpperCase() == 'ON';
+        if (isLightOn != newState) {
+          setState(() {
+            isLightOn = newState;
+            _previousLightState = newState;
+          });
+        }
       }
-      controller.setLightBrightness(int.parse(widget.room.id) , lightIntensity);
     });
+  }
+
+  void _sendLightCommandIfChanged(ControllerLight controller) {
+    final roomId = int.parse(widget.room.id);
+
+    if (_previousLightState != isLightOn) {
+      controller.toggleLight(isLightOn, roomId);
+      _previousLightState = isLightOn;
+    }
+
+    if (_previousBrightness != lightIntensity) {
+      controller.setLightBrightness(roomId, lightIntensity);
+      _previousBrightness = lightIntensity;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.read<ControllerLight>(); // 👈 lấy từ Provider
+    final controller = context.read<ControllerLight>();
 
     return SHCard(
       childrenPadding: const EdgeInsets.all(12),
       children: [
-        // Switcher + % hiển thị
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -74,17 +98,14 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
                   isLightOn = value;
                   lightIntensity = value ? 50 : 0;
                 });
-                // Gửi tín hiệu đến ESP32
-                controller.toggleLight(value, int.parse(widget.room.id));
-                controller.setLightBrightness(int.parse(widget.room.id), lightIntensity);
 
+                // Gửi lệnh nếu cần
+                _sendLightCommandIfChanged(controller);
               },
               icon: const Icon(SHIcons.lightBulbOutline),
             ),
           ],
         ),
-
-        // Slider
         Row(
           children: [
             const Icon(SHIcons.lightMin),
@@ -100,9 +121,12 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
                     lightIntensity = value.toInt();
                     isLightOn = lightIntensity > 0;
                   });
-                  // Gửi tín hiệu đến ESP32
-                  controller.toggleLight(isLightOn, int.parse(widget.room.id));
-                  controller.setLightBrightness(int.parse(widget.room.id), lightIntensity);
+
+                  // Debounce để hạn chế gửi liên tục
+                  _debounceTimer?.cancel();
+                  _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+                    _sendLightCommandIfChanged(controller);
+                  });
                 },
               ),
             ),
@@ -111,5 +135,11 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
   }
 }

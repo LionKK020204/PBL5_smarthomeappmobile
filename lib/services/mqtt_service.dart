@@ -50,6 +50,7 @@ class MQTTService {
     }
   }
 
+
   void publish(String topic, String message) {
     if (!_isConnected) {
       print('⚠️ Không thể gửi. MQTT chưa kết nối.');
@@ -61,6 +62,8 @@ class MQTTService {
     print('📤 Đã gửi: [$topic] → $message');
   }
 
+  final Map<String, Function(String)> _listeners = {};
+
   void subscribe(String topic, Function(String) onMessage) {
     if (!_isConnected) {
       print('⚠️ Không thể đăng ký. MQTT chưa kết nối.');
@@ -68,15 +71,35 @@ class MQTTService {
     }
 
     client.subscribe(topic, MqttQos.atMostOnce);
+    _listeners[topic] = onMessage; // Ghi lại callback
+
+    // Đảm bảo chỉ đăng ký `updates.listen` duy nhất 1 lần
+    _startListening();
+  }
+
+  bool _isListening = false;
+
+  void _startListening() {
+    if (_isListening) return; // Đã lắng nghe rồi
+    _isListening = true;
+
     client.updates?.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       if (c == null || c.isEmpty) return;
-      final recMess = c[0].payload as MqttPublishMessage;
-      final message =
-      MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-      print('📥 Nhận dữ liệu từ [$topic]: $message');
-      onMessage(message);
+
+      for (var msg in c) {
+        final topic = msg.topic;
+        final payload = msg.payload as MqttPublishMessage;
+        final message = MqttPublishPayload.bytesToStringAsString(payload.payload.message);
+
+        print('📥 Nhận dữ liệu từ [$topic]: $message');
+
+        if (_listeners.containsKey(topic)) {
+          _listeners[topic]!(message); // Gọi đúng callback
+        }
+      }
     });
   }
+
 
   void disconnect() {
     _isConnected = false;
@@ -85,6 +108,7 @@ class MQTTService {
 
   void onConnected() {
     print('🔌 MQTT đã kết nối');
+
   }
 
   void onDisconnected() {
@@ -94,6 +118,7 @@ class MQTTService {
 
   void onSubscribed(String topic) {
     print('🔔 Đã đăng ký topic: $topic');
+    publish('home/app/status', 'CONNECTED');
   }
 
   bool get isConnected => _isConnected;

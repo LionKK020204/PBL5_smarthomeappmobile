@@ -27,7 +27,7 @@ class _LightsAndTimerSwitchersState extends State<LightsAndTimerSwitchers> {
     final mqttService = context.read<MQTTService>(); // 👈 lấy từ Provider
     espController = ControllerLight(mqttService);
 
-    getLightStatus();
+    // getLightStatus();
   }
 
   Future<void> getLightStatus() async {
@@ -63,7 +63,7 @@ class _LightsAndTimerSwitchersState extends State<LightsAndTimerSwitchers> {
                   isLightOn = value;
                 });
                 // Gửi tín hiệu đến ESP32
-                espController.toggleLight(value, int.parse(widget.room.id));
+                // espController.toggleLight(value, int.parse(widget.room.id));
               },
               icon: const Icon(SHIcons.lightBulbOutline),
             ),
