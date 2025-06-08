@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +25,9 @@ class FanControlsCard extends StatefulWidget {
 class _FanControlsCardState extends State<FanControlsCard> {
   late bool isFanOn;
   late int fanIntensity;
+  Timer? _debounceTimer;
+  bool? _previousFanState;
+  int? _previousFanSpeed;
 
   @override
   void initState() {
@@ -34,20 +39,38 @@ class _FanControlsCardState extends State<FanControlsCard> {
 
     if (int.parse(widget.room.id) == 1 || int.parse(widget.room.id) == 3){
       _getFanStatus(controller);
-
     }
+    // Lưu giá trị ban đầu để kiểm tra sau này
+    _previousFanState = isFanOn;
+    _previousFanSpeed = fanIntensity;
   }
 
   Future<void> _getFanStatus(ControllerFan controller) async {
     controller.listenFanStatus(int.parse(widget.room.id), (status) {
       if (mounted) {
-        setState(() {
-          isFanOn = status.toUpperCase() == 'ON';
-        });
+        final newState = status.toUpperCase() == 'ON';
+        if (isFanOn != newState) {
+          setState(() {
+            isFanOn = newState;
+            _previousFanState = newState;
+          });
+        }
       }
-      controller.setFanSpeed(int.parse(widget.room.id), fanIntensity);
     });
   }
+
+  void _sendFanCommandIfChanged(ControllerFan controller) {
+    final roomId = int.parse(widget.room.id);
+    if (_previousFanState != isFanOn) {
+      controller.toggleFan(isFanOn, roomId);
+      _previousFanState = isFanOn;
+    }
+    if (_previousFanSpeed != fanIntensity) {
+      controller.setFanSpeed(roomId, fanIntensity);
+      _previousFanSpeed = fanIntensity;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = context.read<ControllerFan>();
@@ -82,8 +105,9 @@ class _FanControlsCardState extends State<FanControlsCard> {
                   isFanOn = value;
                   fanIntensity = value ? 50 : 0;
                 });
-                controller.toggleFan(value, int.parse(widget.room.id));
-                controller.setFanSpeed(int.parse(widget.room.id), fanIntensity);
+
+                // Gửi lệnh nếu cần
+                _sendFanCommandIfChanged(controller);
               },
             ),
           ],
@@ -104,9 +128,12 @@ class _FanControlsCardState extends State<FanControlsCard> {
                     fanIntensity = value.toInt();
                     isFanOn = fanIntensity > 0;
                   });
-                  controller.toggleFan(isFanOn, int.parse(widget.room.id));
-                  controller.setFanSpeed(
-                      int.parse(widget.room.id), fanIntensity);
+
+                  _debounceTimer?.cancel();
+                  _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
+                    _sendFanCommandIfChanged(controller);
+                  });
+
                 },
               ),
             ),
@@ -117,6 +144,12 @@ class _FanControlsCardState extends State<FanControlsCard> {
     );
 
 
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
   }
 }
 // class _FanSwitcher extends StatefulWidget {

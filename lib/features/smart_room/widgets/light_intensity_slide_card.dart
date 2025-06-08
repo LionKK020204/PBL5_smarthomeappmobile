@@ -124,7 +124,7 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
 
                   // Debounce để hạn chế gửi liên tục
                   _debounceTimer?.cancel();
-                  _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+                  _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
                     _sendLightCommandIfChanged(controller);
                   });
                 },
