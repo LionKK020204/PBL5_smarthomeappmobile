@@ -218,23 +218,38 @@ class _FanControlsCardState extends State<FanControlsCard> {
     _previousFanSpeed = currentRoom.fans.value;
 
     final controller = context.read<ControllerFan>();
-    final roomId = int.parse(widget.room.id);
+    _listenFanStatus(controller);
 
+  }
+
+  void _listenFanStatus(ControllerFan controller) {
+    final roomId = int.parse(widget.room.id);
     if (roomId == 1 || roomId == 3) {
       controller.listenFanStatus(roomId, (status) {
-        if (mounted) {
-          final newState = status.toUpperCase() == 'ON';
-          if (_previousFanState != newState) {
-            final updatedRoom = currentRoom.copyWith(
-              fans: currentRoom.fans.copyWith(isOn: newState),
-            );
-            provider.updateRoom(widget.room.id, updatedRoom);
-            _previousFanState = newState;
-          }
+        if (!mounted) return;
+
+        final provider = context.read<SmartRoomProvider>();
+        final currentRoom = provider.getRoomById(widget.room.id);
+
+        final newState = status.toUpperCase() == 'ON';
+        final newSpeed = newState ? 50 : 0;
+
+        if (_previousFanState != newState) {
+          final updatedRoom = currentRoom.copyWith(
+            fans: currentRoom.fans.copyWith(
+                isOn: newState,
+                value: newSpeed
+            ),
+          );
+          provider.updateRoom(widget.room.id, updatedRoom);
+          _previousFanState = newState;
+          _previousFanSpeed = newSpeed;
+
         }
       });
     }
   }
+
 
   void _updateFanState({
     required bool isOn,

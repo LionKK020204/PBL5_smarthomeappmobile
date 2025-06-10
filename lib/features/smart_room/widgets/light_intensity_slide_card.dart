@@ -221,14 +221,21 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
 
       final provider = context.read<SmartRoomProvider>();
       final room = provider.getRoomById(widget.room.id);
-      final newState = status.toUpperCase() == 'ON';
 
+      final newState = status.toUpperCase() == 'ON';
+      final newBrightness = newState ? 50 : 0;
+
+      // cập nhật nếu thay đổi
       if (_previousLightState != newState) {
         final updatedRoom = room.copyWith(
-          lights: room.lights.copyWith(isOn: newState),
+          lights: room.lights.copyWith(
+              isOn: newState,
+              value: newBrightness
+          ),
         );
         provider.updateRoom(widget.room.id, updatedRoom);
         _previousLightState = newState;
+        _previousBrightness = newBrightness;
       }
     });
   }
