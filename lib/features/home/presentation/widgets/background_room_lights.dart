@@ -37,8 +37,6 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
     isLightOn = currentRoom.lights.isOn;
     isFanOn = currentRoom.fans.isOn;
 
-    //isLightOn = widget.room.lights.isOn;
-    //isFanOn = widget.room.fanCondition.isOn;
 
     final lightController = context.read<ControllerLight>();
     final fanController = context.read<ControllerFan>();
@@ -96,12 +94,60 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
     });
   }
 
+  void _updateLightState(bool value) {
+    final provider = context.read<SmartRoomProvider>();
+    final currentRoom = provider.getRoomById(widget.room.id);
+    final lightController = context.read<ControllerLight>();
+
+    setState(() {
+      isLightOn = value;
+    });
+
+    lightController.toggleLight(value, int.parse(widget.room.id));
+    lightController.setLightBrightness(int.parse(widget.room.id), value ? 50 : 0);
+
+    final updatedRoom = currentRoom.copyWith(
+      lights: currentRoom.lights.copyWith(
+        isOn: value,
+        value: value ? 50 : 0,
+      ),
+    );
+    provider.updateRoom(widget.room.id, updatedRoom);
+  }
+
+  void _updateFanState(bool value) {
+    final provider = context.read<SmartRoomProvider>();
+    final currentRoom = provider.getRoomById(widget.room.id);
+    final fanController = context.read<ControllerFan>();
+
+    setState(() {
+      isFanOn = value;
+    });
+
+    fanController.toggleFan(value, int.parse(widget.room.id));
+    fanController.setFanSpeed(int.parse(widget.room.id), value ? 50 : 0);
+
+    final updatedRoom = currentRoom.copyWith(
+      fans: currentRoom.fans.copyWith(
+        isOn: value,
+        value: value ? 50 : 0,
+      ),
+    );
+    provider.updateRoom(widget.room.id, updatedRoom);
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     final env = context.watch<GlobalEnvironmentData>();
-    final lightController = context.read<ControllerLight>();
-    final fanController = context.read<ControllerFan>();
+
+    final provider = context.watch<SmartRoomProvider>();
+    final currentRoom = provider.getRoomById(widget.room.id);
+
+    final lightState = currentRoom.lights.isOn;
+    final fanState = currentRoom.fans.isOn;
+
 
     return Transform(
       transform: Matrix4.translationValues(0, 80 * widget.translation, 0),
@@ -148,56 +194,16 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
                   _DeviceIconSwitcher(
                     icon: const Icon(SHIcons.lightBulbOutline),
                     label: const Text('Lights'),
-                    value: isLightOn,
-                    onTap: (value) {
-                      setState(() {
-                        isLightOn = value;
-                      });
-                      lightController.toggleLight(value, int.parse(widget.room.id));
-                      lightController.setLightBrightness(int.parse(widget.room.id), value ? 50 : 0);
-
-                      // Cập nhật vào Provider
-                      final provider = context.read<SmartRoomProvider>();
-                      final room = provider.getRoomById(widget.room.id);
-                      final updatedRoom = room.copyWith(
-                        lights: room.lights.copyWith(
-                            isOn: value,
-                            value: value ? 50 : 0
-                        ),
-                      );
-                      provider.updateRoom(widget.room.id, updatedRoom);
-                    },
+                    value: lightState,
+                    onTap:_updateLightState,
                   ),
                   if (int.parse(widget.room.id) == 1 || int.parse(widget.room.id) == 3)
                   _DeviceIconSwitcher(
                     icon: const Icon(SHIcons.fan),
                     label: const Text('Fan'),
-                    value: isFanOn,
-                    onTap: (value) {
-                      setState(() {
-                        isFanOn = value;
-                      });
-                      fanController.toggleFan(value, int.parse(widget.room.id));
-                      fanController.setFanSpeed(int.parse(widget.room.id), value ? 50 : 0);
-
-                      // Cập nhật vào Provider
-                      final provider = context.read<SmartRoomProvider>();
-                      final room = provider.getRoomById(widget.room.id);
-                      final updatedRoom = room.copyWith(
-                        fans: room.fans.copyWith(
-                            isOn: value,
-                            value: value ? 50 : 0
-                        ),
-                      );
-                      provider.updateRoom(widget.room.id, updatedRoom);
-                    },
+                    value: fanState,
+                    onTap: _updateFanState,
                   ),
-                  // _DeviceIconSwitcher(
-                  //   onTap: (value) {},
-                  //   icon: const Icon(SHIcons.music),
-                  //   label: const Text('Music'),
-                  //   value: widget.room.musicInfo.isOn,
-                  // ),
                 ],
               ),
             ),

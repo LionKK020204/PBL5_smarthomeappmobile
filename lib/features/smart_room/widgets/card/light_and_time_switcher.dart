@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../controllers/controllerLight.dart';
-import '../../../core/core.dart';
-import '../../../services/mqtt_service.dart';
+import '../../../../controllers/controllerLight.dart';
+import '../../../../core/core.dart';
+import '../../../../services/mqtt_service.dart';
 
 class LightsAndTimerSwitchers extends StatefulWidget {
   const LightsAndTimerSwitchers({required this.room, super.key});

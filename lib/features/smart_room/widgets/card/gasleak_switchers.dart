@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../../../controllers/controllerGasleak.dart';
-import '../../../globals/globals.dart';
-import '../../../core/core.dart';
+import '../../../../controllers/controllerGasleak.dart';
+import '../../../../globals/globals.dart';
+import '../../../../core/core.dart';
 
 class GasLeakInfoCard extends StatefulWidget {
   const GasLeakInfoCard({

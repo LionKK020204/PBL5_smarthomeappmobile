@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pbl5_smarthome/features/smart_room/widgets/gasleak_switchers.dart';
-import 'package:pbl5_smarthome/features/smart_room/widgets/temperature_airhumidity_card.dart';
+import 'package:pbl5_smarthome/features/smart_room/widgets/card/gasleak_switchers.dart';
+import 'package:pbl5_smarthome/features/smart_room/widgets/card/temperature_airhumidity_card.dart';
 import 'package:ui_common/ui_common.dart';
 
 import '../../../core/shared/domain/entities/smart_room.dart';
-import 'fan_controls_card.dart';
-import 'light_and_time_switcher.dart';
-import 'light_intensity_slide_card.dart';
-import 'music_switchers.dart';
+import 'card/fan_controls_card.dart';
+import 'card/light_and_time_switcher.dart';
+import 'card/light_intensity_slide_card.dart';
+import 'card/music_switchers.dart';
 
 class RoomDetailsPageView extends StatelessWidget {
   const RoomDetailsPageView({

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../core/core.dart';
+import '../../../../core/core.dart';
 
 class MusicSwitchers extends StatelessWidget {
   const MusicSwitchers({
