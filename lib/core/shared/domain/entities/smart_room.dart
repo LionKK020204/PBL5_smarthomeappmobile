@@ -12,7 +12,7 @@ class SmartRoom {
     required this.temperature,
     required this.airHumidity,
     required this.lights,
-    required this.fanCondition,
+    required this.fans,
     required this.timer,
     required this.musicInfo,
   });
@@ -23,7 +23,7 @@ class SmartRoom {
   final double temperature;
   final double airHumidity;
   final SmartDevice lights;
-  final SmartDevice fanCondition;
+  final SmartDevice fans;
   final SmartDevice timer;
   final MusicInfo musicInfo;
 
@@ -34,7 +34,7 @@ class SmartRoom {
     double? temperature,
     double? airHumidity,
     SmartDevice? lights,
-    SmartDevice? airCondition,
+    SmartDevice? fans,
     SmartDevice? timer,
     MusicInfo? musicInfo,
   }) =>
@@ -45,7 +45,7 @@ class SmartRoom {
         temperature: temperature ?? this.temperature,
         airHumidity: airHumidity ?? this.airHumidity,
         lights: lights ?? this.lights,
-        fanCondition: airCondition ?? this.fanCondition,
+        fans: fans ?? this.fans,
         musicInfo: musicInfo ?? this.musicInfo,
         timer: timer ?? this.timer,
       );
@@ -66,7 +66,7 @@ final _room = SmartRoom(
   airHumidity: 0.0,
   lights: SmartDevice(type: DeviceType.light, isOn: false, value: 0),
   timer: SmartDevice(type: DeviceType.timer, isOn: false, value: 20),
-  fanCondition: SmartDevice(type: DeviceType.fan, isOn: false, value: 0),
+  fans: SmartDevice(type: DeviceType.fan, isOn: false, value: 0),
   musicInfo: MusicInfo(
     isOn: false,
     currentSong: Song.defaultSong,

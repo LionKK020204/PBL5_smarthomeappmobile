@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pbl5_smarthome/controllers/controllerGasleak.dart';
+import 'package:pbl5_smarthome/services/smartroom_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pbl5_smarthome/services/mqtt_service.dart';
 
@@ -42,6 +43,9 @@ class MQTTInitializer {
         ChangeNotifierProvider(
           create: (_) => ControllerDoor(mqttService),
         ),
+        ChangeNotifierProvider(
+          create: (_) => SmartRoomProvider(),
+        )
       ],
       child: child,
     );

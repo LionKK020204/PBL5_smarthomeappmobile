@@ -5,6 +5,8 @@ import '../../../controllers/controllerLight.dart';
 import '../../../core/core.dart';
 import 'dart:async';
 
+import '../../../services/smartroom_provider.dart';
+
 class LightIntensitySliderCard extends StatefulWidget {
   const LightIntensitySliderCard({
     required this.room,
@@ -27,8 +29,15 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
   @override
   void initState() {
     super.initState();
-    lightIntensity = widget.room.lights.value;
-    isLightOn = widget.room.lights.isOn;
+
+    final provider = context.read<SmartRoomProvider>();
+    final currentRoom = provider.getRoomById(widget.room.id);
+
+    lightIntensity = currentRoom.lights.value;
+    isLightOn = currentRoom.lights.isOn;
+
+    //lightIntensity = widget.room.lights.value;
+    //isLightOn = widget.room.lights.isOn;
 
     final lightController = context.read<ControllerLight>();
     _getLightStatus(lightController);
@@ -101,6 +110,17 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
 
                 // Gửi lệnh nếu cần
                 _sendLightCommandIfChanged(controller);
+
+                // Cập nhật vào Provider
+                final provider = context.read<SmartRoomProvider>();
+                final room = provider.getRoomById(widget.room.id);
+                final updatedRoom = room.copyWith(
+                  lights: room.lights.copyWith(
+                      isOn: isLightOn,
+                      value: lightIntensity
+                  ),
+                );
+                provider.updateRoom(widget.room.id, updatedRoom);
               },
               icon: const Icon(SHIcons.lightBulbOutline),
             ),
@@ -126,6 +146,17 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
                   _debounceTimer?.cancel();
                   _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
                     _sendLightCommandIfChanged(controller);
+
+                    // Cập nhật vào Provider
+                    final provider = context.read<SmartRoomProvider>();
+                    final room = provider.getRoomById(widget.room.id);
+                    final updatedRoom = room.copyWith(
+                      lights: room.lights.copyWith(
+                          isOn: isLightOn,
+                          value: lightIntensity
+                      ),
+                    );
+                    provider.updateRoom(widget.room.id, updatedRoom);
                   });
                 },
               ),

@@ -1,11 +1,29 @@
 enum DeviceType{ light, fan, music, timer }
 
 class SmartDevice {
-  SmartDevice({required this.type ,required this.isOn, required this.value});
+  SmartDevice({
+    required this.type,
+    required this.isOn,
+    required this.value,
+  });
+
   final DeviceType type;
-  late bool isOn;
+  bool isOn;
   final int value;
+
+  SmartDevice copyWith({
+    DeviceType? type,
+    bool? isOn,
+    int? value,
+  }) {
+    return SmartDevice(
+      type: type ?? this.type,
+      isOn: isOn ?? this.isOn,
+      value: value ?? this.value,
+    );
+  }
 }
+
 // enum DeviceType { light, fan, music, timer }
 //
 // class SmartDevice {

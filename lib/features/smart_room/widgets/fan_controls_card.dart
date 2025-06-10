@@ -8,6 +8,7 @@ import '../../../controllers/controllerFan.dart';
 import '../../../core/core.dart';
 import '../../../globals/globals.dart';
 import '../../../services/mqtt_service.dart';
+import '../../../services/smartroom_provider.dart';
 
 class FanControlsCard extends StatefulWidget {
   const FanControlsCard({
@@ -32,8 +33,15 @@ class _FanControlsCardState extends State<FanControlsCard> {
   @override
   void initState() {
     super.initState();
-    isFanOn = widget.room.fanCondition.isOn;
-    fanIntensity = widget.room.fanCondition.value;
+
+    final provider = context.read<SmartRoomProvider>();
+    final currentRoom = provider.getRoomById(widget.room.id);
+
+    isFanOn = currentRoom.fans.isOn;
+    fanIntensity = currentRoom.fans.value;
+
+    //isFanOn = widget.room.fans.isOn;
+    //fanIntensity = widget.room.fans.value;
 
     final controller = context.read<ControllerFan>();
 
@@ -108,6 +116,17 @@ class _FanControlsCardState extends State<FanControlsCard> {
 
                 // Gửi lệnh nếu cần
                 _sendFanCommandIfChanged(controller);
+
+                // Cập nhật vào Provider
+                final provider = context.read<SmartRoomProvider>();
+                final room = provider.getRoomById(widget.room.id);
+                final updatedRoom = room.copyWith(
+                  fans: room.fans.copyWith(
+                      isOn: isFanOn,
+                      value: fanIntensity
+                  ),
+                );
+                provider.updateRoom(widget.room.id, updatedRoom);
               },
             ),
           ],
@@ -132,6 +151,17 @@ class _FanControlsCardState extends State<FanControlsCard> {
                   _debounceTimer?.cancel();
                   _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
                     _sendFanCommandIfChanged(controller);
+
+                    // cập nhật provider
+                    final provider = context.read<SmartRoomProvider>();
+                    final room = provider.getRoomById(widget.room.id);
+                    final updatedRoom = room.copyWith(
+                      fans: room.fans.copyWith(
+                          isOn: isFanOn,
+                          value: fanIntensity
+                      ),
+                    );
+                    provider.updateRoom(widget.room.id, updatedRoom);
                   });
 
                 },
