@@ -53,9 +53,22 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
   void _listenLightStatus(ControllerLight controller) {
     controller.listenLightStatus(int.parse(widget.room.id), (status) {
       if (mounted) {
+        final newValue = status.toUpperCase() == 'ON';
+
         setState(() {
-          isLightOn = status.toUpperCase() == 'ON';
+          isLightOn = newValue;
         });
+
+        // Cập nhật Provider
+        final provider = context.read<SmartRoomProvider>();
+        final room = provider.getRoomById(widget.room.id);
+        final updatedRoom = room.copyWith(
+          lights: room.lights.copyWith(
+            isOn: newValue,
+            value: newValue ? 50 : 0, // Nếu có brightness
+          ),
+        );
+        provider.updateRoom(widget.room.id, updatedRoom);
       }
     });
   }
@@ -63,12 +76,26 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
   void _listenFanStatus(ControllerFan controller) {
     controller.listenFanStatus(int.parse(widget.room.id), (status) {
       if (mounted) {
+        final newValue = status.toUpperCase() == 'ON';
+
         setState(() {
-          isFanOn = status.toUpperCase() == 'ON';
+          isFanOn = newValue;
         });
+
+        // Cập nhật Provider
+        final provider = context.read<SmartRoomProvider>();
+        final room = provider.getRoomById(widget.room.id);
+        final updatedRoom = room.copyWith(
+          fans: room.fans.copyWith(
+            isOn: newValue,
+            value: newValue ? 50 : 0, // Nếu có fan speed
+          ),
+        );
+        provider.updateRoom(widget.room.id, updatedRoom);
       }
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
