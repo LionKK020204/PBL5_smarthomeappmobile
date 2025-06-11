@@ -29,13 +29,13 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
     super.initState();
     final provider = context.read<SmartRoomProvider>();
     final currentRoom = provider.getRoomById(widget.room.id);
+
     _previousLightState = currentRoom.lights.isOn;
     _previousBrightness = currentRoom.lights.value;
 
     LightControlsHelper.listenLightStatus(
-      context: context,
+      state: this, // ✅ truyền trực tiếp State thay vì context + mounted
       roomId: widget.room.id,
-      mounted: mounted,
       onStatusChanged: (newState, newBrightness) {
         final provider = context.read<SmartRoomProvider>();
         final currentRoom = provider.getRoomById(widget.room.id);
@@ -51,7 +51,6 @@ class _LightIntensitySliderCardState extends State<LightIntensitySliderCard> {
       },
     );
   }
-
 
   void _updateLightState({required bool isOn, required int value}) {
     if (_previousLightState == isOn && _previousBrightness == value) return;

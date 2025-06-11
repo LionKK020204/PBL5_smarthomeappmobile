@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../controllers/controllerFan.dart';
 import '../../../../globals/globals.dart';
 import '../../../../services/smartroom_provider.dart';
@@ -21,25 +22,22 @@ class _FanControlsCardState extends State<FanControlsCard> {
   int? _previousFanSpeed;
 
   @override
-  @override
   void initState() {
     super.initState();
 
     final provider = context.read<SmartRoomProvider>();
     final currentRoom = provider.getRoomById(widget.room.id);
-
     _previousFanState = currentRoom.fans.isOn;
     _previousFanSpeed = currentRoom.fans.value;
 
     FanControlsHelper.listenFanStatus(
-      context: context,
+      state: this,
       roomId: widget.room.id,
-      mounted: mounted,
       onStatusChanged: (newState, newSpeed) {
         final provider = context.read<SmartRoomProvider>();
         final currentRoom = provider.getRoomById(widget.room.id);
 
-        if (_previousFanState != newState) {
+        if (_previousFanState != newState || _previousFanSpeed != newSpeed) {
           final updatedRoom = currentRoom.copyWith(
             fans: currentRoom.fans.copyWith(isOn: newState, value: newSpeed),
           );
@@ -51,11 +49,7 @@ class _FanControlsCardState extends State<FanControlsCard> {
     );
   }
 
-
-  void _updateFanState({
-    required bool isOn,
-    required int value,
-  }) {
+  void _updateFanState({required bool isOn, required int value}) {
     if (_previousFanState == isOn && _previousFanSpeed == value) return;
 
     FanControlsHelper.updateFanState(
@@ -68,7 +62,6 @@ class _FanControlsCardState extends State<FanControlsCard> {
     _previousFanState = isOn;
     _previousFanSpeed = value;
   }
-
 
   @override
   Widget build(BuildContext context) {
