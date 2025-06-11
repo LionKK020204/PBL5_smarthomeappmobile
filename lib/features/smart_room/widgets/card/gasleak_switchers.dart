@@ -19,7 +19,7 @@ class GasLeakInfoCard extends StatefulWidget {
 }
 
 class _GasLeakInfoCardState extends State<GasLeakInfoCard> {
-  bool _hasShownWarning = false;
+  //bool _hasShownWarning = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,24 +54,6 @@ class _GasLeakInfoCardState extends State<GasLeakInfoCard> {
                   builder: (context, controller, child) {
                     final gas = controller.gasValue;
 
-                    if (gas > 500 && !_hasShownWarning) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              '⚠️ Cảnh báo: Nồng độ khí gas vượt ngưỡng an toàn!',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            backgroundColor: Colors.redAccent,
-                            duration: Duration(seconds: 4),
-                          ),
-                        );
-                        _hasShownWarning = true;
-                      });
-                    } else if (gas <= 500 && _hasShownWarning) {
-                      _hasShownWarning = false;
-                    }
-
                     return Text(
                       '${gas.toStringAsFixed(1)} ppm',
                       style: TextStyle(
@@ -82,6 +64,7 @@ class _GasLeakInfoCardState extends State<GasLeakInfoCard> {
                     );
                   },
                 ),
+
               ],
             )
           ],

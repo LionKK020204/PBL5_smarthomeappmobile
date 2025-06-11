@@ -8,6 +8,7 @@ import '../../../../controllers/controllerLight.dart';
 import '../../../../core/core.dart';
 import '../../../../globals/globals.dart';
 import '../../../../services/smartroom_provider.dart';
+import 'helper/room_device_controller_helper.dart';
 
 class BackgroundRoomCard extends StatefulWidget {
   const BackgroundRoomCard({
@@ -30,110 +31,98 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
   @override
   void initState() {
     super.initState();
-
     final provider = context.read<SmartRoomProvider>();
     final currentRoom = provider.getRoomById(widget.room.id);
 
     isLightOn = currentRoom.lights.isOn;
     isFanOn = currentRoom.fans.isOn;
 
+    RoomDeviceControllerHelper.listenLightStatus(
+      context: context,
+      roomId: widget.room.id,
+      onStatusChanged: (value) {
+        if (mounted) {
+          setState(() => isLightOn = value);
+        }
+      },
+    );
 
-    final lightController = context.read<ControllerLight>();
-    final fanController = context.read<ControllerFan>();
-
-    _listenLightStatus(lightController);
-
-    if (int.parse(widget.room.id) == 1 || int.parse(widget.room.id) == 3){
-      _listenFanStatus(fanController);
+    if (int.parse(widget.room.id) == 1 || int.parse(widget.room.id) == 3) {
+      RoomDeviceControllerHelper.listenFanStatus(
+        context: context,
+        roomId: widget.room.id,
+        onStatusChanged: (value) {
+          if (mounted) {
+            setState(() => isFanOn = value);
+          }
+        },
+      );
     }
   }
 
-  void _listenLightStatus(ControllerLight controller) {
-    controller.listenLightStatus(int.parse(widget.room.id), (status) {
-      if (mounted) {
-        final newValue = status.toUpperCase() == 'ON';
 
-        setState(() {
-          isLightOn = newValue;
-        });
-
-        // Cập nhật Provider
-        final provider = context.read<SmartRoomProvider>();
-        final room = provider.getRoomById(widget.room.id);
-        final updatedRoom = room.copyWith(
-          lights: room.lights.copyWith(
-            isOn: newValue,
-            value: newValue ? 50 : 0, // Nếu có brightness
-          ),
-        );
-        provider.updateRoom(widget.room.id, updatedRoom);
-      }
-    });
-  }
-
-  void _listenFanStatus(ControllerFan controller) {
-    controller.listenFanStatus(int.parse(widget.room.id), (status) {
-      if (mounted) {
-        final newValue = status.toUpperCase() == 'ON';
-
-        setState(() {
-          isFanOn = newValue;
-        });
-
-        // Cập nhật Provider
-        final provider = context.read<SmartRoomProvider>();
-        final room = provider.getRoomById(widget.room.id);
-        final updatedRoom = room.copyWith(
-          fans: room.fans.copyWith(
-            isOn: newValue,
-            value: newValue ? 50 : 0, // Nếu có fan speed
-          ),
-        );
-        provider.updateRoom(widget.room.id, updatedRoom);
-      }
-    });
-  }
+  // void _listenLightStatus(ControllerLight controller) {
+  //   controller.listenLightStatus(int.parse(widget.room.id), (status) {
+  //     if (mounted) {
+  //       final newValue = status.toUpperCase() == 'ON';
+  //
+  //       setState(() {
+  //         isLightOn = newValue;
+  //       });
+  //
+  //       // Cập nhật Provider
+  //       final provider = context.read<SmartRoomProvider>();
+  //       final room = provider.getRoomById(widget.room.id);
+  //       final updatedRoom = room.copyWith(
+  //         lights: room.lights.copyWith(
+  //           isOn: newValue,
+  //           value: newValue ? 50 : 0, // Nếu có brightness
+  //         ),
+  //       );
+  //       provider.updateRoom(widget.room.id, updatedRoom);
+  //     }
+  //   });
+  // }
+  //
+  // void _listenFanStatus(ControllerFan controller) {
+  //   controller.listenFanStatus(int.parse(widget.room.id), (status) {
+  //     if (mounted) {
+  //       final newValue = status.toUpperCase() == 'ON';
+  //
+  //       setState(() {
+  //         isFanOn = newValue;
+  //       });
+  //
+  //       // Cập nhật Provider
+  //       final provider = context.read<SmartRoomProvider>();
+  //       final room = provider.getRoomById(widget.room.id);
+  //       final updatedRoom = room.copyWith(
+  //         fans: room.fans.copyWith(
+  //           isOn: newValue,
+  //           value: newValue ? 50 : 0, // Nếu có fan speed
+  //         ),
+  //       );
+  //       provider.updateRoom(widget.room.id, updatedRoom);
+  //     }
+  //   });
+  // }
 
   void _updateLightState(bool value) {
-    final provider = context.read<SmartRoomProvider>();
-    final currentRoom = provider.getRoomById(widget.room.id);
-    final lightController = context.read<ControllerLight>();
-
-    setState(() {
-      isLightOn = value;
-    });
-
-    lightController.toggleLight(value, int.parse(widget.room.id));
-    lightController.setLightBrightness(int.parse(widget.room.id), value ? 50 : 0);
-
-    final updatedRoom = currentRoom.copyWith(
-      lights: currentRoom.lights.copyWith(
-        isOn: value,
-        value: value ? 50 : 0,
-      ),
+    setState(() => isLightOn = value);
+    RoomDeviceControllerHelper.updateLightState(
+      context: context,
+      roomId: widget.room.id,
+      value: value,
     );
-    provider.updateRoom(widget.room.id, updatedRoom);
   }
 
   void _updateFanState(bool value) {
-    final provider = context.read<SmartRoomProvider>();
-    final currentRoom = provider.getRoomById(widget.room.id);
-    final fanController = context.read<ControllerFan>();
-
-    setState(() {
-      isFanOn = value;
-    });
-
-    fanController.toggleFan(value, int.parse(widget.room.id));
-    fanController.setFanSpeed(int.parse(widget.room.id), value ? 50 : 0);
-
-    final updatedRoom = currentRoom.copyWith(
-      fans: currentRoom.fans.copyWith(
-        isOn: value,
-        value: value ? 50 : 0,
-      ),
+    setState(() => isFanOn = value);
+    RoomDeviceControllerHelper.updateFanState(
+      context: context,
+      roomId: widget.room.id,
+      value: value,
     );
-    provider.updateRoom(widget.room.id, updatedRoom);
   }
 
 

@@ -22,8 +22,10 @@ class MQTTInitializer {
     await mqttService.connect();
   }
 
+
   // Hàm này dùng để bọc app với Provider, giúp toàn bộ widget tree dùng được mqttService
   static Widget wrapWithProviders(Widget child) {
+    final controllerGasLeak = ControllerGasLeak(mqttService);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => GlobalEnvironmentData()),
@@ -37,9 +39,7 @@ class MQTTInitializer {
         ProxyProvider<MQTTService, ControllerFan>(
           update: (_, mqtt, __) => ControllerFan(mqtt),
         ),
-        ChangeNotifierProvider(
-          create: (_) => ControllerGasLeak(mqttService),
-        ),
+        ChangeNotifierProvider<ControllerGasLeak>.value(value: controllerGasLeak),
         ChangeNotifierProvider(
           create: (_) => ControllerDoor(mqttService),
         ),

@@ -1,4 +1,5 @@
 library globals;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class GlobalEnvironmentData extends ChangeNotifier {
@@ -19,5 +20,4 @@ class GlobalEnvironmentData extends ChangeNotifier {
   }
 }
 
-
-String esp32ID = '192.168.1.5';
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
