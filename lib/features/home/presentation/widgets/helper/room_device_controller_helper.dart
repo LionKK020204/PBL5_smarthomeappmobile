@@ -8,16 +8,16 @@ import '../../../../../services/smartroom_provider.dart';
 
 class RoomDeviceControllerHelper {
   static void listenLightStatus({
-    required BuildContext context,
+    required State state,
     required String roomId,
     required ValueChanged<bool> onStatusChanged,
   }) {
-    final controller = context.read<ControllerLight>();
+    final controller = state.context.read<ControllerLight>();
     controller.listenLightStatus(int.parse(roomId), (status) {
       final newValue = status.toUpperCase() == 'ON';
       onStatusChanged(newValue);
 
-      final provider = context.read<SmartRoomProvider>();
+      final provider = state.context.read<SmartRoomProvider>();
       final room = provider.getRoomById(roomId);
       final updatedRoom = room.copyWith(
         lights: room.lights.copyWith(
@@ -30,16 +30,16 @@ class RoomDeviceControllerHelper {
   }
 
   static void listenFanStatus({
-    required BuildContext context,
+    required State state,
     required String roomId,
     required ValueChanged<bool> onStatusChanged,
   }) {
-    final controller = context.read<ControllerFan>();
+    final controller = state.context.read<ControllerFan>();
     controller.listenFanStatus(int.parse(roomId), (status) {
       final newValue = status.toUpperCase() == 'ON';
       onStatusChanged(newValue);
 
-      final provider = context.read<SmartRoomProvider>();
+      final provider = state.context.read<SmartRoomProvider>();
       final room = provider.getRoomById(roomId);
       final updatedRoom = room.copyWith(
         fans: room.fans.copyWith(
