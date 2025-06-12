@@ -3,8 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:ui_common/ui_common.dart';
 
-import '../../../../controllers/controllerFan.dart';
-import '../../../../controllers/controllerLight.dart';
 import '../../../../core/core.dart';
 import '../../../../globals/globals.dart';
 import '../../../../services/smartroom_provider.dart';
@@ -28,9 +26,12 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
   late bool isLightOn;
   late bool isFanOn;
 
+  bool get _hasFan => widget.room.id == '1' || widget.room.id == '3';
+
   @override
   void initState() {
     super.initState();
+
     final provider = context.read<SmartRoomProvider>();
     final currentRoom = provider.getRoomById(widget.room.id);
 
@@ -41,27 +42,22 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
       state: this,
       roomId: widget.room.id,
       onStatusChanged: (value) {
-        if (mounted) {
-          setState(() => isLightOn = value);
-        }
+        if (mounted) setState(() => isLightOn = value);
       },
     );
 
-    if (int.parse(widget.room.id) == 1 || int.parse(widget.room.id) == 3) {
+    if (_hasFan) {
       RoomDeviceControllerHelper.listenFanStatus(
         state: this,
         roomId: widget.room.id,
         onStatusChanged: (value) {
-          if (mounted) {
-            setState(() => isFanOn = value);
-          }
+          if (mounted) setState(() => isFanOn = value);
         },
       );
     }
   }
 
-
-  void _updateLightState(bool value) {
+  void _updateLight(bool value) {
     setState(() => isLightOn = value);
     RoomDeviceControllerHelper.updateLightState(
       context: context,
@@ -70,7 +66,7 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
     );
   }
 
-  void _updateFanState(bool value) {
+  void _updateFan(bool value) {
     setState(() => isFanOn = value);
     RoomDeviceControllerHelper.updateFanState(
       context: context,
@@ -79,18 +75,11 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final env = context.watch<GlobalEnvironmentData>();
-
     final provider = context.watch<SmartRoomProvider>();
     final currentRoom = provider.getRoomById(widget.room.id);
-
-    final lightState = currentRoom.lights.isOn;
-    final fanState = currentRoom.fans.isOn;
-
 
     return Transform(
       transform: Matrix4.translationValues(0, 80 * widget.translation, 0),
@@ -121,12 +110,6 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
               label: const Text('Air Humidity'),
               data: '${env.humidity.toInt()}%',
             ),
-            height4,
-            // const _RoomInfoRow(
-            //   icon: Icon(SHIcons.timer),
-            //   label: Text('Timer'),
-            //   data: null,
-            // ),
             height12,
             const SHDivider(),
             Padding(
@@ -137,16 +120,16 @@ class _BackgroundRoomCardState extends State<BackgroundRoomCard> {
                   _DeviceIconSwitcher(
                     icon: const Icon(SHIcons.lightBulbOutline),
                     label: const Text('Lights'),
-                    value: lightState,
-                    onTap:_updateLightState,
+                    value: isLightOn,
+                    onTap: _updateLight,
                   ),
-                  if (int.parse(widget.room.id) == 1 || int.parse(widget.room.id) == 3)
-                  _DeviceIconSwitcher(
-                    icon: const Icon(SHIcons.fan),
-                    label: const Text('Fan'),
-                    value: fanState,
-                    onTap: _updateFanState,
-                  ),
+                  if (_hasFan)
+                    _DeviceIconSwitcher(
+                      icon: const Icon(SHIcons.fan),
+                      label: const Text('Fan'),
+                      value: isFanOn,
+                      onTap: _updateFan,
+                    ),
                 ],
               ),
             ),
