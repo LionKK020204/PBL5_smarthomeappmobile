@@ -90,7 +90,9 @@ class RoomDeviceControllerHelper {
       context: context,
       roomId: roomId,
       value: value,
-      toggle: context.read<ControllerLight>().toggleLight,
+      toggle: (int roomIdInt, bool newValue) {
+        context.read<ControllerLight>().toggleLight(newValue, roomIdInt);
+      },
       setValue: context.read<ControllerLight>().setLightBrightness,
       updateRoomFn: (room) => room.copyWith(
         lights: room.lights.copyWith(isOn: value, value: value ? 50 : 0),
@@ -107,7 +109,9 @@ class RoomDeviceControllerHelper {
       context: context,
       roomId: roomId,
       value: value,
-      toggle: context.read<ControllerFan>().toggleFan,
+      toggle: (int roomIdInt, bool newValue) {
+        context.read<ControllerFan>().toggleFan(newValue, roomIdInt);
+      },
       setValue: context.read<ControllerFan>().setFanSpeed,
       updateRoomFn: (room) => room.copyWith(
         fans: room.fans.copyWith(isOn: value, value: value ? 50 : 0),
