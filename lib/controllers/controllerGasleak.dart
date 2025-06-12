@@ -28,7 +28,7 @@ class ControllerGasLeak extends ChangeNotifier {
         notifyListeners(); // cập nhật UI
 
         // ⚠️ Kiểm tra cảnh báo
-        if (_gasValue > 1500 && !_hasShownWarning) {
+        if (_gasValue > 1200 && !_hasShownWarning) {
           _hasShownWarning = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final context = navigatorKey.currentContext;
