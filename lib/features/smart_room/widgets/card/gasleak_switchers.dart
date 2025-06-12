@@ -59,7 +59,7 @@ class _GasLeakInfoCardState extends State<GasLeakInfoCard> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: gas > 500 ? Colors.red : Colors.white,
+                        color: gas > 1500 ? Colors.red : Colors.white,
                       ),
                     );
                   },
